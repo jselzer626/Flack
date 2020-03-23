@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <title>Flack</title>
+  </head>
+  <body>
+    <h1 class="display-4">Welcome to Flack</h1>
+    <p class="lead">Boost your workflow with instantaneous messaging!</p>
+    <br>
+    <br>
+    <h4 id="welcomeText"></h4>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        let welcomeText = document.getElementById("welcomeText")
+        //see if username already exists
+        if (!localStorage.getItem('userName')) {
+          welcomeText.innerHTML = "<h4>Looks like you're a new user!</h4><button class='btn btn-primary' id='createNewUser'>Create Username</button>"
+        } else {
+          let userName = localStorage.getItem("userName")
+          welcomeText.innerHTML = "<p class='lead'>" + `Welcome back ${userName}!` + "</p>"
+        }
+        //handle creation of new userName
+        document.getElementById("createNewUser").onclick = () => {
+          //as channels are created with other users think about how to use that list as a way to eliminate duplicates
+          welcomeText.innerHTML = "<p class='lead'>Please enter new username below</p><input id='newUserName' type='text'><br><br><button id='saveNewUser' class='btn btn-primary'>Create</button>"
+        }
+
+        document.getElementById("saveNewUser").onclick = () => {
+          let userName = document.getElementById("saveNewUser").value
+          localStorage.setItem('userName', userName)
+          welcomeText.innerHTML = "<p class='lead'>" + `Welcome, ${userName}!` + "</p>"
+        }
+
+        //something to load any existing channels & prompt for new ones if nothing there
+      })
+    </script>
+  </body>
+</html>
