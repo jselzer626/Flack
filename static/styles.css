@@ -20,9 +20,13 @@
   background-color: white;
   text-align: center;
   padding: 20px 0;
-  font-size: 30px;
 }
 
 .hide {
   visibility: hidden;
+}
+
+input {
+  margin-left: auto;
+  margin-right: auto;
 }

@@ -18,18 +18,12 @@
       <div class="item2" id="userName">Menu
         <p class="lead">Sample Text</p>
       </div>
-      <div class="item3">Main
+      <div class="item3">
         <div class="hide" id="newUserForm">
-          <form>
-            <div class="form-group">
-              <label for="newUsername">New Username</label>
-              <input type="text" class="form-control" id="newUsername">
-              <button class="btn btn-primary" id="createNewUser">Create</button>
-            </div>
-          </form>
+          <h4>Looks like you're new!</h4>
+          <p class="lead">Please enter new user name below</p>
         </div>
         <div class="hide" id="returnUserGreeting">
-          <p></p>
         </div>
       </div>
       <div class="item4">Footer
@@ -37,12 +31,44 @@
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
+        //localStorage.clear()
+        //variables for different divs depending on what's in localStorage
+        let returnGreeting = document.querySelector("#returnUserGreeting")
+        let newUserSpace = document.querySelector("#newUserForm")
+
         //check to see if user already has a stored username
           if (localStorage.getItem('userName')) {
-            let userName = localStorage.getItem('username')
-            document.querySelector("#returnUserGreeting").style.visibility = "visible";
-          } else {
 
+            let userName = localStorage.getItem('userName')
+
+            greeting(userName, userName, returnGreeting, newUserSpace)
+
+          } else {
+            newUserSpace.style.visibility = "visible"
+
+            let newUserInput = document.createElement("input")
+            newUserInput.className = "form-control"
+            newUserInput.style.width = "25%"
+            newUserInput.setAttribute("type", "text")
+            newUserSpace.append(newUserInput)
+
+            let newUserCreate = document.createElement("button")
+            newUserCreate.className = "btn btn-primary"
+            newUserCreate.innerHTML = "Create"
+            newUserCreate.style.margin = "15px"
+            newUserSpace.append(newUserCreate)
+
+            //handle user creation
+            newUserCreate.onclick = () => {
+              if (newUserInput.value) {
+
+                let userName = newUserInput.value
+                localStorage.setItem('userName', userName)
+
+                greeting(userName, userName, returnGreeting, newUserSpace)
+
+              }
+            }
           }
       })
     </script>
