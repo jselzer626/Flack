@@ -10,36 +10,40 @@
     <title>Flack</title>
   </head>
   <body>
-    <h1 class="display-4">Welcome to Flack</h1>
-    <p class="lead">Boost your workflow with instantaneous messaging!</p>
-    <br>
-    <br>
-    <h4 id="welcomeText"></h4>
-
-
+    <div class="grid-container">
+      <div class="item1">
+        <p class="display-4">Welcome to Flack!</p>
+        <p class="lead">A Slack copycat app</p>
+      </div>
+      <div class="item2" id="userName">Menu
+        <p class="lead">Sample Text</p>
+      </div>
+      <div class="item3">Main
+        <div class="hide" id="newUserForm">
+          <form>
+            <div class="form-group">
+              <label for="newUsername">New Username</label>
+              <input type="text" class="form-control" id="newUsername">
+              <button class="btn btn-primary" id="createNewUser">Create</button>
+            </div>
+          </form>
+        </div>
+        <div class="hide" id="returnUserGreeting">
+          <p></p>
+        </div>
+      </div>
+      <div class="item4">Footer
+      </div>
+    </div>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-        let welcomeText = document.getElementById("welcomeText")
-        //see if username already exists
-        if (!localStorage.getItem('userName')) {
-          welcomeText.innerHTML = "<h4>Looks like you're a new user!</h4><button class='btn btn-primary' id='createNewUser'>Create Username</button>"
-        } else {
-          let userName = localStorage.getItem("userName")
-          welcomeText.innerHTML = "<p class='lead'>" + `Welcome back ${userName}!` + "</p>"
-        }
-        //handle creation of new userName
-        document.getElementById("createNewUser").onclick = () => {
-          //as channels are created with other users think about how to use that list as a way to eliminate duplicates
-          welcomeText.innerHTML = "<p class='lead'>Please enter new username below</p><input id='newUserName' type='text'><br><br><button id='saveNewUser' class='btn btn-primary'>Create</button>"
-        }
+        //check to see if user already has a stored username
+          if (localStorage.getItem('userName')) {
+            let userName = localStorage.getItem('username')
+            document.querySelector("#returnUserGreeting").style.visibility = "visible";
+          } else {
 
-        document.getElementById("saveNewUser").onclick = () => {
-          let userName = document.getElementById("saveNewUser").value
-          localStorage.setItem('userName', userName)
-          welcomeText.innerHTML = "<p class='lead'>" + `Welcome, ${userName}!` + "</p>"
-        }
-
-        //something to load any existing channels & prompt for new ones if nothing there
+          }
       })
     </script>
   </body>
