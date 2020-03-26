@@ -2,7 +2,6 @@
 .item2 { grid-area: menu; }
 .item3 { grid-area: main; }
 .item4 { grid-area: footer; }
-.item5 { grid-area: right; }
 
 .grid-container {
   display: grid;
@@ -24,9 +23,4 @@
 
 .hide {
   visibility: hidden;
-}
-
-input {
-  margin-left: auto;
-  margin-right: auto;
 }

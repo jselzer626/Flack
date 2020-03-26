@@ -15,8 +15,18 @@
         <p class="display-4">Welcome to Flack!</p>
         <p class="lead">A Slack copycat app</p>
       </div>
-      <div class="item2" id="userName">Menu
-        <p class="lead">Sample Text</p>
+      <div class="item2">
+        <h4>Your Channels</h4>
+        <br>
+        <div class="input-group mb3">
+          <div class="input-group-prepend">
+            <button class="btn btn-primary" id="channelCreate">Create</button>
+          </div>
+          <input type="text" class="form-control" placeholder="Enter new channel name" id="newChannelName">
+        </div>
+        <br>
+        <ul id="channelDisplay">
+        </ul>
       </div>
       <div class="item3">
         <div class="hide" id="newUserForm">
@@ -35,40 +45,56 @@
         //variables for different divs depending on what's in localStorage
         let returnGreeting = document.querySelector("#returnUserGreeting")
         let newUserSpace = document.querySelector("#newUserForm")
+        let channelSpace = document.querySelector(".item2")
+        let channelDisplay = document.querySelector("#channelDisplay")
+        let channelCreate = document.querySelector("#channelCreate")
+        let newChannel = document.querySelector("#newChannelName")
+        let channelList = ''
 
         //check to see if user already has a stored username
           if (localStorage.getItem('userName')) {
 
             let userName = localStorage.getItem('userName')
 
-            greeting(userName, userName, returnGreeting, newUserSpace)
+            greeting('returnUser', userName, returnGreeting, newUserSpace)
 
           } else {
+
             newUserSpace.style.visibility = "visible"
 
-            let newUserInput = document.createElement("input")
-            newUserInput.className = "form-control"
-            newUserInput.style.width = "25%"
-            newUserInput.setAttribute("type", "text")
-            newUserSpace.append(newUserInput)
+            createInputForm("Enter new username here", "Create", newUserSpace, 'newUserCreate', '25%')
 
-            let newUserCreate = document.createElement("button")
-            newUserCreate.className = "btn btn-primary"
-            newUserCreate.innerHTML = "Create"
-            newUserCreate.style.margin = "15px"
-            newUserSpace.append(newUserCreate)
-
-            //handle user creation
+            //if no stored name, then handle user creation
+            //think about maybe adding the option to create a different username -> add boolean to local storage for current user
             newUserCreate.onclick = () => {
               if (newUserInput.value) {
 
                 let userName = newUserInput.value
                 localStorage.setItem('userName', userName)
 
-                greeting(userName, userName, returnGreeting, newUserSpace)
-
+                greeting('newUser', userName, returnGreeting, newUserSpace)
               }
             }
+          }
+
+          //load channels
+          if (localStorage.getItem("channels")) {
+            channelList = localStorage.getItem("channels")
+          } else {
+            channelDisplay.innerHTML = "<em>No channels yet!</em>"
+          }
+
+          //handle channel Creation
+          channelCreate.onclick = () => {
+            let newChannelName = newChannel.value
+            //store in memory
+            if (channelList != '') {
+              channelList += (newChannelName + '     ')
+              localStorage.setItem('channels', channelList)
+            } else {
+              localStorage.setItem('channels', (newChannelName + '     '))
+            }
+            console.log(localStorage.getItem("channels"))
           }
       })
     </script>
