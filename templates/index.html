@@ -32,6 +32,12 @@
         <div class="hide" id="newUserForm">
           <h4>Looks like you're new!</h4>
           <p class="lead">Please enter new user name below</p>
+          <div class="input-group mb-3" style="width: 25%; margin: auto">
+            <div class="input-group-prepend">
+              <button class="btn btn-primary" id='newUserCreate'>Create</button>
+            </div>
+            <input type="text" class="form-control" placeholder="Enter new user name" id="newUserInput">
+          </div>
         </div>
         <div class="hide" id="returnUserGreeting">
         </div>
@@ -50,22 +56,19 @@
         let channelCreate = document.querySelector("#channelCreate")
         let newChannel = document.querySelector("#newChannelName")
         let channelList = ''
+        let userName = ''
+
+        //check to see if channel list exists
+        localStorage.getItem('channelList') ? channelList = localStorage.getItem('channelList') : ''
+        localStorage.getItem('userName') ? userName = localStorage.getItem('userName') : ''
 
         //check to see if user already has a stored username
-          if (localStorage.getItem('userName')) {
-
-            let userName = localStorage.getItem('userName')
-
+          if (userName != '')
             greeting('returnUser', userName, returnGreeting, newUserSpace)
-
-          } else {
-
+          else {
             newUserSpace.style.visibility = "visible"
+            //createInputForm("Enter new username here", "Create", newUserSpace, 'newUserCreate', 'newUserInput', '25%')
 
-            createInputForm("Enter new username here", "Create", newUserSpace, 'newUserCreate', '25%')
-
-            //if no stored name, then handle user creation
-            //think about maybe adding the option to create a different username -> add boolean to local storage for current user
             newUserCreate.onclick = () => {
               if (newUserInput.value) {
 
@@ -76,13 +79,8 @@
               }
             }
           }
-
-          //load channels
-          if (localStorage.getItem("channels")) {
-            channelList = localStorage.getItem("channels")
-          } else {
-            channelDisplay.innerHTML = "<em>No channels yet!</em>"
-          }
+          //load channels already stored in memory when page loads
+          channelList != '' ? channelList.trim().split('     ').forEach(channel => channelDisplay.innerHTML += `<li>${channel}</li>`) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
 
           //handle channel Creation
           channelCreate.onclick = () => {
@@ -90,11 +88,12 @@
             //store in memory
             if (channelList != '') {
               channelList += (newChannelName + '     ')
-              localStorage.setItem('channels', channelList)
+              localStorage.setItem('channelList', channelList)
             } else {
-              localStorage.setItem('channels', (newChannelName + '     '))
+              channelList += (newChannelName + '     ')
+              localStorage.setItem('channelList', (newChannelName + '     '))
             }
-            console.log(localStorage.getItem("channels"))
+            channelDisplay.innerHTML += `<li>${newChannelName}</li>`
           }
       })
     </script>
