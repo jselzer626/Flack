@@ -18,5 +18,10 @@ def index():
 def create_channel(data):
     new_channel_name = data['newChannelName']
     channel_content.update({new_channel_name: []})
-    print(channel_content)
+
     emit("confirm channel creation", {'newChannelName': new_channel_name, 'message': f"{new_channel_name} succesfully created!"}, broadcast=True)
+
+@socketio.on('channel view')
+def channel_view(data):
+    channel_to_lookup = data['channelName']
+    print(channel_to_lookup)

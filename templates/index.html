@@ -20,6 +20,7 @@
         <h4>Your Channels</h4>
         <div id="channelAlertSpace">
         </div>
+        <br>
         <div class="input-group mb3">
           <div class="input-group-prepend">
             <button class="btn btn-primary" id="channelCreate">Create</button>
@@ -54,14 +55,9 @@
         let returnGreeting = document.querySelector("#returnUserGreeting")
         let newUserSpace = document.querySelector("#newUserForm")
         let channelSpace = document.querySelector(".item2")
-        //let channelDisplay = document.querySelector("#channelDisplay")
-        //let channelCreate = document.querySelector("#channelCreate")
-        //let newChannel = document.querySelector("#newChannelName")
-        //let channelList = ''
         let userName = ''
 
         //check to see if channel list exists
-        //localStorage.getItem('channelList') ? channelList = localStorage.getItem('channelList') : ''
         localStorage.getItem('userName') ? userName = localStorage.getItem('userName') : ''
 
         //check to see if user already has a stored username
@@ -81,23 +77,6 @@
               }
             }
           }
-          //load channels already stored in memory when page loads
-          //channelList != '' ? channelList.trim().split('     ').forEach(channel => channelDisplay.innerHTML += `<li>${channel}</li>`) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
-
-          //handle channel Creation
-          /*channelCreate.onclick = () => {
-            let newChannelName = newChannel.value
-            //store in memory
-            if (channelList != '') {
-              channelList += (newChannelName + '     ')
-              localStorage.setItem('channelList', channelList)
-            } else {
-              channelList += (newChannelName + '     ')
-              localStorage.setItem('channelList', (newChannelName + '     '))
-            }
-            channelDisplay.innerHTML += `<li>${newChannelName}</li>`
-          }*/
-
       })
     </script>
   </body>
