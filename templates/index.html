@@ -44,40 +44,22 @@
         </div>
         <div class="hide" id="returnUserGreeting">
         </div>
+        <h4 id='selectedChannel' class='display-4'></h4>
+        <div>
+          <dl class="row" id='postsView'>
+          </dl>
+        </div>
+        <div id='createPost' style="display: none">
+          <div class="input-group mb-3" style="width: 70%; margin: auto" id='newPostCreate'>
+            <div class="input-group-prepend">
+              <button class="btn btn-primary">Post</button>
+            </div>
+            <textarea class="form-control" rows="1" placeholder="Type your message here"></textarea>
+          </div>
+        </div>
       </div>
       <div class="item4">Footer
       </div>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        //localStorage.clear()
-        //variables for different divs depending on what's in localStorage
-        let returnGreeting = document.querySelector("#returnUserGreeting")
-        let newUserSpace = document.querySelector("#newUserForm")
-        let channelSpace = document.querySelector(".item2")
-        let userName = ''
-
-        //check to see if channel list exists
-        localStorage.getItem('userName') ? userName = localStorage.getItem('userName') : ''
-
-        //check to see if user already has a stored username
-          if (userName != '')
-            greeting('returnUser', userName, returnGreeting, newUserSpace)
-          else {
-            newUserSpace.style.visibility = "visible"
-            //createInputForm("Enter new username here", "Create", newUserSpace, 'newUserCreate', 'newUserInput', '25%')
-
-            newUserCreate.onclick = () => {
-              if (newUserInput.value) {
-
-                let userName = newUserInput.value
-                localStorage.setItem('userName', userName)
-
-                greeting('newUser', userName, returnGreeting, newUserSpace)
-              }
-            }
-          }
-      })
-    </script>
   </body>
 </html>
