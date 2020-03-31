@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
@@ -47,7 +48,10 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
-    print(channel_content)
+
+    # serialize data & send back to client
+    post = json.dumps(post.__dict__)
+    emit("add post to channel", {'post': post})
 
 @socketio.on('channel view')
 def channel_view(data):

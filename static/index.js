@@ -1,7 +1,7 @@
 //connect to socket
 let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-let currentChannel = ''
 
+//function definition for new/user greeting
 let greeting = (status, userName, returnGreeting, newUserSpace) => {
 
   let greetingText = document.createElement('p')
@@ -14,20 +14,32 @@ let greeting = (status, userName, returnGreeting, newUserSpace) => {
   status == "returnUser" ? greetingText.innerHTML = `Welcome back ${userName}!` : greetingText.innerHTML = `Welcome ${userName}`
 }
 
+let postCreate = (post, areaToPost) => {
+
+  //post will be an object containing text, user and timeStamp
+  let newPost = document.createElement('li')
+  newPost.innerHTML = `<b>${post.user}</b><span class="text-muted">   ${post.time}</span><br>${post.text}`
+  areaToPost.append(newPost)
+
+}
+
+//function for channel switch
 let channelView = channel => {
   socket.emit('channel view', {'channelName': channel})
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  localStorage.clear()
+  //localStorage.clear()
 
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
   let returnGreeting = document.querySelector("#returnUserGreeting")
   let newUserSpace = document.querySelector("#newUserForm")
+  let postSpace = document.querySelector("#postsView")
   let channelList = ''
   let userName = ''
+  let currentChannel = ''
 
   //check to see if channel list exists
   localStorage.getItem('userName') ? userName = localStorage.getItem('userName') : ''
@@ -42,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
       newUserCreate.onclick = () => {
         if (newUserInput.value) {
 
-          let userName = newUserInput.value
+          userName = newUserInput.value
           localStorage.setItem('userName', userName)
 
           greeting('newUser', userName, returnGreeting, newUserSpace)
@@ -100,20 +112,20 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   socket.on('view channel messages', data => {
-    let postDisplay = document.querySelector("#postsView")
     currentChannel = data.channelName
-
-    document.querySelector('#selectedChannel').innerHTML = data.channelName
+    document.querySelector('#selectedChannel').innerHTML = currentChannel
 
     //if no messages yet in channel notify user
-    if (data.posts.length == 0){
-      postDisplay.innerHTML = '<dd class="lead" style="margin:auto"><em>No posts in this channel yet!</em></dd>'
-    }
-    else {
-      ''
-    }
+    data.posts.length == 0 ? postSpace.innerHTML = '<p class="lead" style="margin:auto"><em>No posts in this channel yet!</em></p>': data.posts.forEach(post => postCreate(post, postSpace))
 
     document.querySelector('#createPost').style.display = 'block'
+
+  })
+
+  socket.on('add post to channel', data=> {
+    let postToAdd = JSON.parse(data.post)
+    postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
+    postCreate(postToAdd, postSpace)
 
   })
 
