@@ -1,12 +1,13 @@
 import os
 import json
 
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
 channel_content = {}
@@ -36,6 +37,17 @@ class Post:
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/loadChannel", methods=["GET"])
+def loadChannel():
+
+    print('logged')
+    channel = request.args.get('q')
+
+    try:
+        return jsonify(channel_content[channel])
+    except KeyError:
+        return jsonify("no posts yet for this channel yet!")
 
 @socketio.on("create channel")
 def create_channel(data):

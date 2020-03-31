@@ -23,14 +23,28 @@ let postCreate = (post, areaToPost) => {
 
 }
 
+let loadChannel = channel => {
+  console.log('here')
+  const request = new XMLHttpRequest()
+  request.open('GET', `/loadChannel?q=${channel}`)
+  request.onload = () => {
+    //here
+    let response = JSON.parse(request.responseText)
+    console.log(response)
+  }
+  request.send()
+}
+
 //function for channel switch
 let channelView = channel => {
-  socket.emit('channel view', {'channelName': channel})
+  //socket.emit('channel view', {'channelName': channel})
+  loadChannel(channel)
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  //localStorage.clear()
+  localStorage.clear()
 
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
@@ -116,9 +130,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('#selectedChannel').innerHTML = currentChannel
 
     //if no messages yet in channel notify user
-    data.posts.length == 0 ? postSpace.innerHTML = '<p class="lead" style="margin:auto"><em>No posts in this channel yet!</em></p>': data.posts.forEach(post => postCreate(post, postSpace))
 
-    document.querySelector('#createPost').style.display = 'block'
+
+    /*data.posts.length == 0 ? postSpace.innerHTML = '<p class="lead" style="margin:auto"><em>No posts in this channel yet!</em></p>': data.posts.forEach(post => postCreate(post, postSpace))
+
+    document.querySelector('#createPost').style.display = 'block'*/
 
   })
 
