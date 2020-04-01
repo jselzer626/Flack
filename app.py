@@ -45,6 +45,14 @@ def loadChannel():
 
     return jsonify(channel_content[channel])
 
+# sockets functions --------------------------------------------------------------------------------------------------------------
+
+@socketio.on("load channel list")
+def loadChannelList():
+    channelList = channel_content.keys()
+    emit("confirm channel list load", {'channelList': channelList})
+
+
 @socketio.on("create channel")
 def create_channel(data):
     new_channel_name = data['newChannelName']
@@ -56,6 +64,7 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
+    print(channel_content[data['channel']])
 
     # serialize data & send back to client
     post = json.dumps(post.__dict__)

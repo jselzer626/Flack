@@ -1,153 +1,126 @@
-//connect to socket
-let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
-//function declarations
-
-let greeting = (status, userName, returnGreeting, newUserSpace) => {
-
-  let greetingText = document.createElement('p')
-
-  newUserSpace.style.display = "none"
-  returnGreeting.style.visibility = "visible"
-  returnGreeting.appendChild(greetingText)
-  greetingText.className = "lead"
-
-  status == "returnUser" ? greetingText.innerHTML = `Welcome back ${userName}!` : greetingText.innerHTML = `Welcome ${userName}`
-}
-
-let postCreate = (post, areaToPost) => {
-
-  //post will be an object containing text, user and timeStamp
-  let newPost = document.createElement('li')
-  newPost.innerHTML = `<b>${post.user}</b><span class="text-muted">   ${post.time}</span><br>${post.text}`
-  areaToPost.append(newPost)
-
-}
-
-let loadChannel = channel => {
-  const request = new XMLHttpRequest()
-  request.open('GET', `/loadChannel?q=${channel}`)
-  request.onload = () => {
-
-    let postDisplaySpace = document.querySelector('#postsView')
-
-    //clear any existing messages
-    postDisplaySpace.innerHTML = ''
-
-    //save channel to browser memory
-    localStorage.setItem('currentChannel', channel)
-
-    //change channel header
-    document.querySelector('#selectedChannel').innerHTML = channel
-
-    //parse response and add to DOM
-    let response = JSON.parse(request.responseText)
-    response.length > 0 ? response.forEach(post => postCreate(post, postDisplaySpace)) : postDisplaySpace.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
-
-    //make post create input appear
-    document.querySelector("#newPostCreate").style.display = 'block'
-  }
-  request.send()
-}
-
-//function for channel switch
-let channelView = channel => {
-  loadChannel(channel)
-}
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  //localStorage.clear()
+  //connect to socket
+  let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
   //variable definitions
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
-  let returnGreeting = document.querySelector("#returnUserGreeting")
-  let newUserSpace = document.querySelector("#newUserForm")
   let postSpace = document.querySelector("#postsView")
-  let channelList = ''
+  let newUserSpace = document.querySelector("#newUserForm")
   let userName = ''
 
+  // function definitions
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  // user Greeting
+  let greeting = (status, userName, newUserSpace=newUserSpace) => {
 
-  //check to see if channel list exists
-  localStorage.getItem('userName') ? userName = localStorage.getItem('userName') : ''
+    let greetingText = document.createElement('p')
 
-  //check to see if user already has a stored username
-    if (userName != '')
-      greeting('returnUser', userName, returnGreeting, newUserSpace)
-    else {
-      newUserSpace.style.visibility = "visible"
-      //createInputForm("Enter new username here", "Create", newUserSpace, 'newUserCreate', 'newUserInput', '25%')
+    newUserSpace.style.display = "none"
+    document.querySelector("#userGreeting").appendChild(greetingText)
+    greetingText.className = "lead"
+    status == "returnUser" ? greetingText.innerHTML = `Welcome back ${userName}!` : greetingText.innerHTML = `Welcome ${userName}`
+  }
 
-      newUserCreate.onclick = () => {
-        if (newUserInput.value) {
+  //create and format post
+  let postCreate = (post, areaToPost) => {
 
-          userName = newUserInput.value
-          localStorage.setItem('userName', userName)
+    let newPost = document.createElement('li')
+    newPost.innerHTML = `<b>${post.user}</b><span class="text-muted">   ${post.time}</span><br>${post.text}`
+    areaToPost.append(newPost)
+  }
 
-          greeting('newUser', userName, returnGreeting, newUserSpace)
-        }
-      }
+  //load channel
+  let loadChannel = (channel, postSpace=postSpace) => {
+    const request = new XMLHttpRequest()
+    request.open('GET', `/loadChannel?q=${channel}`)
+    request.onload = () => {
+
+      //clear any existing messages, save channel to broswer memory, change page header
+      postSpace.innerHTML = ''
+      localStorage.setItem('currentChannel', channel)
+      document.querySelector('#selectedChannel').innerHTML = channel
+
+      //add response to DOM and make div with post input form appear
+      let response = JSON.parse(request.responseText)
+      response.length > 0 ? response.forEach(post => postCreate(post, postSpace)) : postSpace.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
+      document.querySelector("#newPostCreate").style.display = 'block'
+
     }
+    request.send()
+  }
 
-  //check to see if channels saved in browser and update variables
-  if (localStorage.getItem('channelList')) {
-    channelList = localStorage.getItem('channelList')
-    channelList.trim().split('     ').forEach(channel => channelDisplay.innerHTML += `<li><a href='#' onclick="channelView('${channel}')">${channel}</a></li>`)
-  } else
-    channelDisplay.innerHTML = "<em>No channels yet!</em>"
+  //---------------------------------------------------------------------------------------------------------------------------------
+  //configure non web-socket buttons
+  //userName create
+  newUserSpace.querySelector('button').onclick = saveUser => {
 
-  //once connection is made configure buttons
+    let userNameToSave = newUserSpace.querySelector('input')
+
+    if (userNameToSave.value) {
+      userName = userNameToSave.value
+      localStorage.setItem('userName', userName)
+      greeting('newUser', userName)
+    } else {
+      saveUser.preventDefault()
+      window.alert('Please enter something into the field')
+      return false
+    }
+  }
+  //channel view
+  postSpace.querySelectorAll('a').forEach(link => {
+    link.onclick = () => loadChannel(link.innerHTML)
+  })
+
+  //---------------------------------------------------------------------------------------------------------------------------------
+  // once user first visits page check to see if username or make new user form appear
+  if (localStorage.getItem('userName')) {
+    userName = localStorage.getItem('userName')
+    greeting('returnUser', userName)
+  }
+
+  //---------------------------------------------------------------------------------------------------------------------------------
   socket.on('connect', () => {
 
-    //button for channel configuration
+    //configure web sockets buttons
+    //new channel button
     document.querySelector('#channelCreate').onclick = () => {
-
-      //add something later to handle if a blank name is inputted
       let newChannelName = document.querySelector("#newChannelName").value
-
-      channelList += (newChannelName + '     ')
-      localStorage.setItem('channelList', channelList)
       socket.emit('create channel', {'newChannelName': newChannelName})
     }
 
     //new post create button
     newPostCreate.querySelector("button").onclick = () => {
-
-      //confirm channel name
       let currentChannel = localStorage.getItem('currentChannel')
-
-      //save text
       let post = newPostCreate.querySelector("textarea").value
-
-      //timestamp
       let today = new Date()
       let timeStamp = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? $`0${today.getMinutes()}` : `${today.getMinutes()}`)
-
-      //send to server
       socket.emit('save post', {'user': userName, 'time': timeStamp, 'text': post, 'channel': currentChannel})
-
     }
 
+    //load channels - should just happen automatically once DOM loaded / sockets connected - could eventually pass a username here as a parameter once user specific channel lists exist
+    socket.emit('load channel list')
+
   })
 
+  //list of channels from server
+  socket.on('confirm channel list load' data => {
+    data.length > 0 ? data['channelList'].forEach(channel => channelDisplay.innerHTML += `<li><a href='#'>${channel}</a></li>`) : channelDisplay.innerHTML == "<em>No channels yet!</em>"
+  })
+
+  //this is sent once channel has been added server side
   socket.on('confirm channel creation', data => {
-
-    //if this is first channel added then clear no channels added alert
     channelDisplay.innerHTML == "<em>No channels yet!</em>" ? channelDisplay.innerHTML = '' : ''
-
-    //add channel name
     document.querySelector("#channelAlertSpace").innerHTML = data.message
-    data.newChannelName ? channelDisplay.innerHTML += `<li><a href='#' onclick="channelView('${data.newChannelName}')">${data.newChannelName}</a></li>` : ''
-
+    data.newChannelName ? channelDisplay.innerHTML += `<li><a href='#'>${data.newChannelName}</a></li>` : ''
   })
 
+  //this is sent once post has been added to channel dictionary server side
   socket.on('add post to channel', data=> {
     let postToAdd = JSON.parse(data.post)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
     postCreate(postToAdd, postSpace)
-
   })
-
 
 })
