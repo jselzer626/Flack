@@ -1,7 +1,8 @@
 //connect to socket
 let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
-//function definition for new/user greeting
+//function declarations
+
 let greeting = (status, userName, returnGreeting, newUserSpace) => {
 
   let greetingText = document.createElement('p')
@@ -24,28 +25,41 @@ let postCreate = (post, areaToPost) => {
 }
 
 let loadChannel = channel => {
-  console.log('here')
   const request = new XMLHttpRequest()
   request.open('GET', `/loadChannel?q=${channel}`)
   request.onload = () => {
-    //here
+
+    let postDisplaySpace = document.querySelector('#postsView')
+
+    //clear any existing messages
+    postDisplaySpace.innerHTML = ''
+
+    //save channel to browser memory
+    localStorage.setItem('currentChannel', channel)
+
+    //change channel header
+    document.querySelector('#selectedChannel').innerHTML = channel
+
+    //parse response and add to DOM
     let response = JSON.parse(request.responseText)
-    console.log(response)
+    response.length > 0 ? response.forEach(post => postCreate(post, postDisplaySpace)) : postDisplaySpace.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
+
+    //make post create input appear
+    document.querySelector("#newPostCreate").style.display = 'block'
   }
   request.send()
 }
 
 //function for channel switch
 let channelView = channel => {
-  //socket.emit('channel view', {'channelName': channel})
   loadChannel(channel)
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  localStorage.clear()
+  //localStorage.clear()
 
+  //variable definitions
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
   let returnGreeting = document.querySelector("#returnUserGreeting")
@@ -53,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let postSpace = document.querySelector("#postsView")
   let channelList = ''
   let userName = ''
-  let currentChannel = ''
+
 
   //check to see if channel list exists
   localStorage.getItem('userName') ? userName = localStorage.getItem('userName') : ''
@@ -79,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //check to see if channels saved in browser and update variables
   if (localStorage.getItem('channelList')) {
     channelList = localStorage.getItem('channelList')
-    channelList.trim().split('     ').forEach(channel => channelDisplay.innerHTML += `<li><a href='#' class='channelLink' onclick="channelView('${channel}')">${channel}</a></li>`)
+    channelList.trim().split('     ').forEach(channel => channelDisplay.innerHTML += `<li><a href='#' onclick="channelView('${channel}')">${channel}</a></li>`)
   } else
     channelDisplay.innerHTML = "<em>No channels yet!</em>"
 
@@ -99,6 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //new post create button
     newPostCreate.querySelector("button").onclick = () => {
+
+      //confirm channel name
+      let currentChannel = localStorage.getItem('currentChannel')
 
       //save text
       let post = newPostCreate.querySelector("textarea").value
@@ -121,20 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //add channel name
     document.querySelector("#channelAlertSpace").innerHTML = data.message
-    data.newChannelName ? channelDisplay.innerHTML += `<li><a href='#' class='channelLink' onclick="channelView('${data.newChannelName}')">${data.newChannelName}</a></li>` : ''
-
-  })
-
-  socket.on('view channel messages', data => {
-    currentChannel = data.channelName
-    document.querySelector('#selectedChannel').innerHTML = currentChannel
-
-    //if no messages yet in channel notify user
-
-
-    /*data.posts.length == 0 ? postSpace.innerHTML = '<p class="lead" style="margin:auto"><em>No posts in this channel yet!</em></p>': data.posts.forEach(post => postCreate(post, postSpace))
-
-    document.querySelector('#createPost').style.display = 'block'*/
+    data.newChannelName ? channelDisplay.innerHTML += `<li><a href='#' onclick="channelView('${data.newChannelName}')">${data.newChannelName}</a></li>` : ''
 
   })
 

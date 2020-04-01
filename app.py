@@ -41,13 +41,9 @@ def index():
 @app.route("/loadChannel", methods=["GET"])
 def loadChannel():
 
-    print('logged')
     channel = request.args.get('q')
 
-    try:
-        return jsonify(channel_content[channel])
-    except KeyError:
-        return jsonify("no posts yet for this channel yet!")
+    return jsonify(channel_content[channel])
 
 @socketio.on("create channel")
 def create_channel(data):
