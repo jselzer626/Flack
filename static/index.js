@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  localStorage.clear()
+
   //connect to socket
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
@@ -8,16 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let newPostCreate = document.querySelector("#newPostCreate")
   let postSpace = document.querySelector("#postsView")
   let newUserSpace = document.querySelector("#newUserForm")
-  let userName = ''
+  let userName = localStorage.getItem('userName') ? localStorage.getItem('userName') : ''
+  let currentChannel = localStorage.getItem('currentChannel') ? localStorage.getItem('currentChannel') : ''
 
-  // function definitions
-  //------------------------------------------------------------------------------------------------------------------------------------------
-  // user Greeting
-  let greeting = (status, userName, newUserSpace=newUserSpace) => {
+  //---------------------------------------------------------------------------------------------------------------------------------
+  //function definitions
+  //user Greeting
+  let greeting = (status, userName, space=newUserSpace) => {
 
     let greetingText = document.createElement('p')
 
-    newUserSpace.style.display = "none"
+    space.style.display = "none"
     document.querySelector("#userGreeting").appendChild(greetingText)
     greetingText.className = "lead"
     status == "returnUser" ? greetingText.innerHTML = `Welcome back ${userName}!` : greetingText.innerHTML = `Welcome ${userName}`
@@ -25,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //create and format post
   let postCreate = (post, areaToPost) => {
-
     let newPost = document.createElement('li')
     newPost.innerHTML = `<b>${post.user}</b><span class="text-muted">   ${post.time}</span><br>${post.text}`
     areaToPost.append(newPost)
@@ -74,11 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   //---------------------------------------------------------------------------------------------------------------------------------
-  // once user first visits page check to see if username or make new user form appear
-  if (localStorage.getItem('userName')) {
-    userName = localStorage.getItem('userName')
-    greeting('returnUser', userName)
-  }
+  // greet return user
+  userName != '' ? greeting('returnUser', userName) : ''
+
+  //load most recent channel
+  currentChannel != '' ? loadChannel(currentChannel) : ''
 
   //---------------------------------------------------------------------------------------------------------------------------------
   socket.on('connect', () => {
@@ -92,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //new post create button
     newPostCreate.querySelector("button").onclick = () => {
-      let currentChannel = localStorage.getItem('currentChannel')
+      currentChannel = localStorage.getItem('currentChannel')
       let post = newPostCreate.querySelector("textarea").value
       let today = new Date()
       let timeStamp = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? $`0${today.getMinutes()}` : `${today.getMinutes()}`)
@@ -105,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   //list of channels from server
-  socket.on('confirm channel list load' data => {
+  socket.on('confirm channel list load', data => {
     data.length > 0 ? data['channelList'].forEach(channel => channelDisplay.innerHTML += `<li><a href='#'>${channel}</a></li>`) : channelDisplay.innerHTML == "<em>No channels yet!</em>"
   })
 
