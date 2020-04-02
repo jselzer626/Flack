@@ -34,23 +34,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //load channel
-  let loadChannel = (channel, postSpace=postSpace) => {
+  let loadChannel = (channel, space=postSpace) => {
     const request = new XMLHttpRequest()
     request.open('GET', `/loadChannel?q=${channel}`)
     request.onload = () => {
 
       //clear any existing messages, save channel to broswer memory, change page header
-      postSpace.innerHTML = ''
+      space.innerHTML = ''
       localStorage.setItem('currentChannel', channel)
       document.querySelector('#selectedChannel').innerHTML = channel
 
       //add response to DOM and make div with post input form appear
       let response = JSON.parse(request.responseText)
-      response.length > 0 ? response.forEach(post => postCreate(post, postSpace)) : postSpace.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
+      response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
       document.querySelector("#newPostCreate").style.display = 'block'
 
     }
     request.send()
+  }
+
+  let createChannelLink = (channel, space=channelDisplay) => {
+    let newLinkContainer = document.createElement('li')
+    let newLink = document.createElement('a')
+    newLink.setAttribute('href', '#')
+    newLink.innerHTML = `${channel}`
+    newLink.addEventListener('click', function() {
+      loadChannel(channel)
+    })
+    newLinkContainer.append(newLink)
+    space.append(newLinkContainer)
   }
 
   //---------------------------------------------------------------------------------------------------------------------------------
@@ -71,9 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   //channel view
-  postSpace.querySelectorAll('a').forEach(link => {
-    link.onclick = () => loadChannel(link.innerHTML)
-  })
+  /*channelDisplay.querySelectorAll('a').forEach(link => {
+    link.onclick = () => {
+      loadChannel(link.innerHTML)
+    }
+  })*/
 
   //---------------------------------------------------------------------------------------------------------------------------------
   // greet return user
@@ -108,14 +122,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //list of channels from server
   socket.on('confirm channel list load', data => {
-    data.length > 0 ? data['channelList'].forEach(channel => channelDisplay.innerHTML += `<li><a href='#'>${channel}</a></li>`) : channelDisplay.innerHTML == "<em>No channels yet!</em>"
+    data.length > 0 ? data['channelList'].forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
   })
 
   //this is sent once channel has been added server side
   socket.on('confirm channel creation', data => {
     channelDisplay.innerHTML == "<em>No channels yet!</em>" ? channelDisplay.innerHTML = '' : ''
     document.querySelector("#channelAlertSpace").innerHTML = data.message
-    data.newChannelName ? channelDisplay.innerHTML += `<li><a href='#'>${data.newChannelName}</a></li>` : ''
+    createChannelLink(data.newChannelName)
   })
 
   //this is sent once post has been added to channel dictionary server side
