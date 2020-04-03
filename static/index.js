@@ -27,24 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //create and format post
-  let postCreate = (post, areaToPost) => {
+  let postCreate = (post, areaToPost=postSpace) => {
     let newPost = document.createElement('li')
     newPost.innerHTML = `<b>${post.user}</b><span class="text-muted">   ${post.time}</span><br>${post.text}`
     areaToPost.append(newPost)
   }
 
-  //load channel
+  //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
   let loadChannel = (channel, space=postSpace) => {
     const request = new XMLHttpRequest()
     request.open('GET', `/loadChannel?q=${channel}`)
     request.onload = () => {
 
-      //clear any existing messages, save channel to broswer memory, change page header
       space.innerHTML = ''
       localStorage.setItem('currentChannel', channel)
       document.querySelector('#selectedChannel').innerHTML = channel
-
-      //add response to DOM and make div with post input form appear
       let response = JSON.parse(request.responseText)
       response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
       document.querySelector("#newPostCreate").style.display = 'block'
@@ -82,12 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return false
     }
   }
-  //channel view
-  /*channelDisplay.querySelectorAll('a').forEach(link => {
-    link.onclick = () => {
-      loadChannel(link.innerHTML)
-    }
-  })*/
 
   //---------------------------------------------------------------------------------------------------------------------------------
   // greet return user
@@ -133,10 +124,10 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   //this is sent once post has been added to channel dictionary server side
-  socket.on('add post to channel', data=> {
+  socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
-    postCreate(postToAdd, postSpace)
+    postCreate(postToAdd)
   })
 
 })

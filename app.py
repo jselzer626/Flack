@@ -42,7 +42,6 @@ def index():
 def loadChannel():
 
     channel = request.args.get('q')
-
     return jsonify(channel_content[channel])
 
 # sockets functions --------------------------------------------------------------------------------------------------------------
@@ -64,11 +63,8 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
-    print(channel_content[data['channel']])
-
-    # serialize data & send back to client
     post = json.dumps(post.__dict__)
-    emit("add post to channel", {'post': post})
+    emit("add post to channel", {'post': post}, broadcast=True)
 
 @socketio.on('channel view')
 def channel_view(data):
