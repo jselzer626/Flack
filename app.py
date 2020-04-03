@@ -49,8 +49,7 @@ def loadChannel():
 @socketio.on("load channel list")
 def loadChannelList():
     channelList = json.dumps(list(channel_content.keys()))
-    emit("confirm channel list load", {'channelList': channelList})
-
+    emit("confirm channel list load", {'channelList': channelList}, broadcast=True)
 
 @socketio.on("create channel")
 def create_channel(data):

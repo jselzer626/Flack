@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  localStorage.clear()
+  //localStorage.clear()
 
   //connect to socket
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -10,26 +10,37 @@ document.addEventListener("DOMContentLoaded", () => {
   let newPostCreate = document.querySelector("#newPostCreate")
   let postSpace = document.querySelector("#postsView")
   let newUserSpace = document.querySelector("#newUserForm")
+  let changeUser = document.querySelector("#userNameChange")
   let userName = localStorage.getItem('userName') ? localStorage.getItem('userName') : ''
   let currentChannel = localStorage.getItem('currentChannel') ? localStorage.getItem('currentChannel') : ''
 
   //---------------------------------------------------------------------------------------------------------------------------------
   //function definitions
   //user Greeting
-  let greeting = (status, userName, space=newUserSpace) => {
+  let greeting = (status, userName, newUserForm=newUserSpace, changeUserSpace=changeUser) => {
 
     let greetingText = document.createElement('p')
 
-    space.style.display = "none"
+    newUserForm.style.display = "none"
     document.querySelector("#userGreeting").appendChild(greetingText)
     greetingText.className = "lead"
     status == "returnUser" ? greetingText.innerHTML = `Welcome back ${userName}!` : greetingText.innerHTML = `Welcome ${userName}`
+    changeUserSpace.style.display = "block" //contains change userName button
+
+    //configure change user name button
+    changeUserSpace.querySelector('button').addEventListener('click', () => {
+      changeUserSpace.style.display = 'none'
+      greetingText.innerHTML = ''
+      newUserForm.style.display = 'block'
+      newUserForm.querySelector('h4').style.display = 'none'
+    })
   }
 
   //create and format post
   let postCreate = (post, areaToPost=postSpace) => {
     let newPost = document.createElement('li')
-    newPost.innerHTML = `<b>${post.user}</b><span class="text-muted">   ${post.time}</span><br>${post.text}`
+    newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
+    newPost.style.marginRight = '30px'
     areaToPost.append(newPost)
   }
 
@@ -84,6 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // greet return user
   userName != '' ? greeting('returnUser', userName) : ''
 
+  //load channel channel list
+  socket.emit('load channel list')
+
   //load most recent channel
   currentChannel != '' ? loadChannel(currentChannel) : ''
 
@@ -102,18 +116,16 @@ document.addEventListener("DOMContentLoaded", () => {
       currentChannel = localStorage.getItem('currentChannel')
       let post = newPostCreate.querySelector("textarea").value
       let today = new Date()
-      let timeStamp = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? $`0${today.getMinutes()}` : `${today.getMinutes()}`)
+      let timeStamp = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? `0${today.getMinutes()}` : `${today.getMinutes()}`)
       socket.emit('save post', {'user': userName, 'time': timeStamp, 'text': post, 'channel': currentChannel})
+      newPostCreate.querySelector("textarea").innerHTML = ''
     }
-
-    //load channels - should just happen automatically once DOM loaded / sockets connected - could eventually pass a username here as a parameter once user specific channel lists exist
-    socket.emit('load channel list')
-
   })
 
   //list of channels from server
   socket.on('confirm channel list load', data => {
-    data.length > 0 ? data['channelList'].forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
+    data = JSON.parse(data.channelList)
+    data.length > 0 ? data.forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
   })
 
   //this is sent once channel has been added server side
