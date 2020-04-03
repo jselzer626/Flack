@@ -118,14 +118,16 @@ document.addEventListener("DOMContentLoaded", () => {
       let today = new Date()
       let timeStamp = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? `0${today.getMinutes()}` : `${today.getMinutes()}`)
       socket.emit('save post', {'user': userName, 'time': timeStamp, 'text': post, 'channel': currentChannel})
-      newPostCreate.querySelector("textarea").innerHTML = ''
+      newPostCreate.querySelector("textarea").value = ''
     }
   })
 
-  //list of channels from server
+  //list of channels from server - first part of function checks that there isn't already a list loaded (if two broswer windows open)
   socket.on('confirm channel list load', data => {
-    data = JSON.parse(data.channelList)
-    data.length > 0 ? data.forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
+    if (channelDisplay.querySelectorAll('a').length == 1) {
+      data = JSON.parse(data.channelList)
+      data.length > 0 ? data.forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
+    }
   })
 
   //this is sent once channel has been added server side
