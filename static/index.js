@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem('currentChannel', channel)
         document.querySelector('#selectedChannel').innerHTML = channel
         response = JSON.parse(response)
-        response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
+        response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
         document.querySelector("#newPostCreate").style.display = 'block'
       }
     }

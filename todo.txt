@@ -1,0 +1,13 @@
+Todo's
+This is my attempt at a ticketing system
+
+Add delete button to each post
+  Add file add button to each post?
+
+Change "Welcome to Flack" to selected channel name
+
+change background color of channel list to dark and channel names to white text
+
+move post create button into footer space?
+
+notification for when a post is created in a channel 
