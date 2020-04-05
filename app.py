@@ -42,7 +42,10 @@ def index():
 def loadChannel():
 
     channel = request.args.get('q')
-    return jsonify(channel_content[channel])
+    try:
+        return jsonify(channel_content[channel])
+    except KeyError:
+        return jsonify("Channel does not exist")
 
 # sockets functions --------------------------------------------------------------------------------------------------------------
 

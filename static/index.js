@@ -49,14 +49,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const request = new XMLHttpRequest()
     request.open('GET', `/loadChannel?q=${channel}`)
     request.onload = () => {
-
       space.innerHTML = ''
-      localStorage.setItem('currentChannel', channel)
-      document.querySelector('#selectedChannel').innerHTML = channel
-      let response = JSON.parse(request.responseText)
-      response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
-      document.querySelector("#newPostCreate").style.display = 'block'
-
+      let response = request.responseText
+      //if localStorage has saved the variable but the server has been restarted (i.e. all channels deleted) then handle error
+      if (response.trim() == '"Channel does not exist"')
+        space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
+      else {
+        localStorage.setItem('currentChannel', channel)
+        document.querySelector('#selectedChannel').innerHTML = channel
+        response = JSON.parse(response)
+        response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<p class="lead"><em>No posts here yet!</em></p>'
+        document.querySelector("#newPostCreate").style.display = 'block'
+      }
     }
     request.send()
   }
@@ -95,11 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // greet return user
   userName != '' ? greeting('returnUser', userName) : ''
 
-  //load channel channel list
-  socket.emit('load channel list')
-
   //load most recent channel
   currentChannel != '' ? loadChannel(currentChannel) : ''
+
+  //load channel channel list
+  socket.emit('load channel list')
 
   //---------------------------------------------------------------------------------------------------------------------------------
   socket.on('connect', () => {
