@@ -10,4 +10,6 @@ change background color of channel list to dark and channel names to white text
 
 move post create button into footer space?
 
-notification for when a post is created in a channel 
+notification for when a post is created in a channel
+
+test 20 message loads per time (possibly with button) and 100 message display cap

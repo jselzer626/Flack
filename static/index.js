@@ -11,11 +11,19 @@ document.addEventListener("DOMContentLoaded", () => {
   let postSpace = document.querySelector("#postsView")
   let newUserSpace = document.querySelector("#newUserForm")
   let changeUser = document.querySelector("#userNameChange")
+  let activeUsers = document.querySelector('#activeUsers')
   let userName = localStorage.getItem('userName') ? localStorage.getItem('userName') : ''
   let currentChannel = localStorage.getItem('currentChannel') ? localStorage.getItem('currentChannel') : ''
 
   //---------------------------------------------------------------------------------------------------------------------------------
   //function definitions
+  //Timestamping
+  let getTime = () => {
+    let today = new Date()
+    let rightNow = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? `0${today.getMinutes()}` : `${today.getMinutes()}`)
+    return rightNow
+  }
+
   //user Greeting
   let greeting = (status, userName, newUserForm=newUserSpace, changeUserSpace=changeUser) => {
 
@@ -37,15 +45,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //create and format post
-  let postCreate = (post, areaToPost=postSpace) => {
+  let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
     let newPost = document.createElement('li')
     newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
     newPost.style.marginRight = '30px'
     areaToPost.append(newPost)
+    currentActiveUsers.innerHTML = `<b>Active Users:</b> ${activeUsersCount}`
   }
 
   //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
-  let loadChannel = (channel, space=postSpace) => {
+  let loadChannel = (channel, space=postSpace, currentActiveUsers=activeUsers) => {
+    let channelHeader = document.querySelector(".item1")
     const request = new XMLHttpRequest()
     request.open('GET', `/loadChannel?q=${channel}`)
     request.onload = () => {
@@ -56,9 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
         space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
       else {
         localStorage.setItem('currentChannel', channel)
-        document.querySelector('#selectedChannel').innerHTML = channel
         response = JSON.parse(response)
-        response.length > 0 ? response.forEach(post => postCreate(post, space)) : space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
+        console.log(response)
+        channelHeader.querySelector('h4').innerHTML = channel
+        channelHeader.querySelector('p').innerHTML = `Created: ${response.channelCreated}`
+        response.posts.length > 0 ? response.posts.forEach(post => postCreate(post, space)) : space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
         document.querySelector("#newPostCreate").style.display = 'block'
       }
     }
@@ -112,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //new channel button
     document.querySelector('#channelCreate').onclick = () => {
       let newChannelName = document.querySelector("#newChannelName").value
-      socket.emit('create channel', {'newChannelName': newChannelName})
+      socket.emit('create channel', {'newChannelName': newChannelName, 'channelCreated': getTime()})
     }
 
     //new post create button
@@ -120,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentChannel = localStorage.getItem('currentChannel')
       let post = newPostCreate.querySelector("textarea").value
       let today = new Date()
-      let timeStamp = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? `0${today.getMinutes()}` : `${today.getMinutes()}`)
+      let timeStamp = getTime()
       socket.emit('save post', {'user': userName, 'time': timeStamp, 'text': post, 'channel': currentChannel})
       newPostCreate.querySelector("textarea").value = ''
     }
@@ -144,8 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
   //this is sent once post has been added to channel dictionary server side
   socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
+    let currentUsers = parseInt(data.currentActiveUsers)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
-    postCreate(postToAdd)
+    postCreate(postToAdd, currentUsers)
   })
 
 })

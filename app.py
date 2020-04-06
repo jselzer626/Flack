@@ -32,7 +32,14 @@ class Post:
                 channel_content[self.channel].pop(0)
 
         # store saved post at end of channel post list
-        channel_content[self.channel].append(post_to_store)
+        channel_content[self.channel]['posts'].append(post_to_store)
+
+    def count_channel_users(self):
+
+        active_channel_users = set((map(lambda post: post['user'], channel_content[self.channel]['posts'])))
+
+        return len(active_channel_users)
+
 
 @app.route("/")
 def index():
@@ -57,7 +64,8 @@ def loadChannelList():
 @socketio.on("create channel")
 def create_channel(data):
     new_channel_name = data['newChannelName']
-    channel_content.update({new_channel_name: []})
+    channel_created_time = data['channelCreated']
+    channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': []}})
 
     emit("confirm channel creation", {'newChannelName': new_channel_name, 'message': f"{new_channel_name} succesfully created!"}, broadcast=True)
 
@@ -65,8 +73,10 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
+    currentActiveUsers = post.count_channel_users()
     post = json.dumps(post.__dict__)
-    emit("add post to channel", {'post': post}, broadcast=True)
+    print(currentActiveUsers)
+    emit("add post to channel", {'post': post, 'currentActiveUsers': currentActiveUsers}, broadcast=True)
 
 @socketio.on('channel view')
 def channel_view(data):
