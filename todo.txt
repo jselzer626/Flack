@@ -1,15 +1,21 @@
 Todo's
 This is my attempt at a ticketing system
 
+-add active user count for load channel (/get)
+
 Add delete button to each post
   Add file add button to each post?
 
 Change "Welcome to Flack" to selected channel name
 
-change background color of channel list to dark and channel names to white text
-
-move post create button into footer space?
+placeholder in footer space if no channel selected
 
 notification for when a post is created in a channel
 
 test 20 message loads per time (possibly with button) and 100 message display cap
+
+
+COMPLETED:
+change background color of channel list to dark and channel names to white text
+
+move post create button into footer space?

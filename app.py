@@ -34,10 +34,10 @@ class Post:
         # store saved post at end of channel post list
         channel_content[self.channel]['posts'].append(post_to_store)
 
-    def count_channel_users(self):
-
-        active_channel_users = set((map(lambda post: post['user'], channel_content[self.channel]['posts'])))
-
+# count active users for a given channel
+def count_channel_users(channel):
+        active_channel_users = set((map(lambda post: post['user'], channel_content[channel]['posts'])))
+        channel_content[channel]['users'] = len(active_channel_users)
         return len(active_channel_users)
 
 
@@ -50,6 +50,8 @@ def loadChannel():
 
     channel = request.args.get('q')
     try:
+        count_channel_users(channel)
+        print(channel_content[channel])
         return jsonify(channel_content[channel])
     except KeyError:
         return jsonify("Channel does not exist")
@@ -65,7 +67,7 @@ def loadChannelList():
 def create_channel(data):
     new_channel_name = data['newChannelName']
     channel_created_time = data['channelCreated']
-    channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': []}})
+    channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': [], 'users': 0}})
 
     emit("confirm channel creation", {'newChannelName': new_channel_name, 'message': f"{new_channel_name} succesfully created!"}, broadcast=True)
 
@@ -73,9 +75,8 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
-    currentActiveUsers = post.count_channel_users()
+    currentActiveUsers = count_channel_users(post.channel)
     post = json.dumps(post.__dict__)
-    print(currentActiveUsers)
     emit("add post to channel", {'post': post, 'currentActiveUsers': currentActiveUsers}, broadcast=True)
 
 @socketio.on('channel view')
