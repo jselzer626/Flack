@@ -51,28 +51,33 @@ document.addEventListener("DOMContentLoaded", () => {
     newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
     newPost.style.marginRight = '30px'
     areaToPost.append(newPost)
+    console.log(activeUsersCount)
     currentActiveUsers.innerHTML = activeUsersCount
   }
 
   //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
-  let loadChannel = (channel, space=postSpace, channelHeader = channelHeaderSpace) => {
+  let loadChannel = (channel, space=postSpace, pageLoad, channelHeader=channelHeaderSpace) => {
     const request = new XMLHttpRequest()
     request.open('GET', `/loadChannel?q=${channel}`)
     request.onload = () => {
       space.innerHTML = ''
       let response = request.responseText
-      console.log(response)
       //if localStorage has saved the variable but the server has been restarted (i.e. all channels deleted) then handle error
       if (response.trim() == '"Channel does not exist"')
         space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
       else {
         localStorage.setItem('currentChannel', channel)
-        console.log(response)
         response = JSON.parse(response)
         channelHeader.querySelector('h4').innerHTML = `#${channel}`
         channelHeader.querySelector('p').innerHTML = `<b>Created:</b> ${response.channelCreated}`
         channelHeader.querySelector('#channelDetails').style.display = "block"
-        response.posts.length > 0 ? response.posts.forEach(post => postCreate(post, space)) : space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
+        if (response.posts.length > 0)
+          response.posts.forEach(post => postCreate(post, response.users, space))
+        else {
+          space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
+          activeUsers.innerHTML = response.users
+        }
+
         document.querySelector("#newPostCreate").style.display = 'block'
       }
     }
