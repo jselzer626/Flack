@@ -26,13 +26,23 @@ class Post:
         post_to_store['time'] = self.time
         post_to_store['text'] = self.text
 
-        # verify that channel does not have more than 100 posts saved
-        if channel_content[self.channel]:
-            while len(channel_content[self.channel]) > 100:
-                channel_content[self.channel].pop(0)
-
-        # store saved post at end of channel post list
         channel_content[self.channel]['posts'].append(post_to_store)
+
+    def popPost(self):
+
+        popPosts = False
+
+        if channel_content[self.channel]['posts']:
+            while len(channel_content[self.channel]['posts']) > 5:
+                popPosts = True
+                channel_content[self.channel]['posts'].pop(0)
+
+        #will let the broswer to know if older posts need to be removed from DOM
+        return popPosts
+
+    def indexPost(self):
+
+        return channel_content[self.channel]['posts'].index(self)
 
 # count active users for a given channel
 def count_channel_users(channel):
@@ -75,9 +85,12 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
+    indexPosition = post.indexPost()
+    print(indexPosition)
+    removePosts = post.popPost()
     currentActiveUsers = count_channel_users(post.channel)
     post = json.dumps(post.__dict__)
-    emit("add post to channel", {'post': post, 'currentActiveUsers': currentActiveUsers}, broadcast=True)
+    emit("add post to channel", {'post': post, 'currentActiveUsers': currentActiveUsers, 'removePosts': removePosts}, broadcast=True)
 
 @socketio.on('channel view')
 def channel_view(data):

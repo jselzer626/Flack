@@ -49,8 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
   //create and format post
   let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
     let newPost = document.createElement('li')
+    let postDelete = document.createElement('button')
+    postDelete.className = 'btn btn-secondary btn-sm'
+    postDelete.style.float = 'right'
+    postDelete.innerHTML = 'Delete'
+    postDelete.addEventListener('click', e => {
+      console.log(e.target.parentNode)
+    })
     newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
     newPost.style.marginRight = '30px'
+    newPost.append(postDelete)
     areaToPost.append(newPost)
     currentActiveUsers.innerHTML = activeUsersCount
   }
@@ -169,9 +177,13 @@ document.addEventListener("DOMContentLoaded", () => {
     createChannelLink(data.newChannelName)
   })
 
-  //this is sent once post has been added to channel dictionary server side
+  //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
+    console.log(postToAdd)
+    if (data.removePosts == true)
+      postsView.removeChild(postsView.childNodes[0])
+
     let currentUsers = parseInt(data.currentActiveUsers)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
     postCreate(postToAdd, currentUsers)
