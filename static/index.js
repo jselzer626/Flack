@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
   //variable definitions
+  let channelCreate = document.querySelector('#channelCreate')
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
   let postSpace = document.querySelector("#postsView")
@@ -51,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
     newPost.style.marginRight = '30px'
     areaToPost.append(newPost)
-    console.log(activeUsersCount)
     currentActiveUsers.innerHTML = activeUsersCount
   }
 
@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
           space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
           activeUsers.innerHTML = response.users
         }
-
         document.querySelector("#newPostCreate").style.display = 'block'
+        channelDisplay.querySelectorAll('a').forEach(link => link.innerHTML == channel ? link.closest('li').style.backgroundColor = '#007bff' : link.closest('li').style.backgroundColor = '#014421' )
       }
     }
     request.send()
@@ -99,6 +99,14 @@ document.addEventListener("DOMContentLoaded", () => {
   //---------------------------------------------------------------------------------------------------------------------------------
   //configure non web-socket buttons
   //userName create
+
+  document.querySelector('#createChannelPrompt').onclick = () => {
+
+    document.querySelector('#createChannelPrompt').parentElement.style.display = "none"
+    channelCreate.style.display = ''
+
+  }
+
   newUserSpace.querySelector('button').onclick = saveUser => {
 
     let userNameToSave = newUserSpace.querySelector('input')
@@ -118,9 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // greet return user
   userName != '' ? greeting('returnUser', userName) : ''
 
-  //load most recent channel
-  currentChannel != '' ? loadChannel(currentChannel) : channelHeaderSpace.innerHTML = 'No channel currently selected!'
-
   //load channel channel list
   socket.emit('load channel list')
 
@@ -129,9 +134,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //configure web sockets buttons
     //new channel button
-    document.querySelector('#channelCreate').onclick = () => {
+    channelCreate.querySelector('button').onclick = () => {
       let newChannelName = document.querySelector("#newChannelName").value
       socket.emit('create channel', {'newChannelName': newChannelName, 'channelCreated': getTime()})
+      document.querySelector("#newChannelName").value = ''
+      channelCreate.style.display = 'none'
+      document.querySelector('#createChannelPrompt').parentElement.style.display = "block"
     }
 
     //new post create button
@@ -150,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (channelDisplay.querySelectorAll('a').length == 1) {
       data = JSON.parse(data.channelList)
       data.length > 0 ? data.forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
+      currentChannel != '' ? loadChannel(currentChannel) : channelHeaderSpace.innerHTML = 'No channel currently selected!'
     }
   })
 

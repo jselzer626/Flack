@@ -1,6 +1,10 @@
 Todo's
 This is my attempt at a ticketing system
 
+username change form needs to move below slack header in right section if form appears
+
+placeholder for channel header space when channel selected so everything isn't so squished
+
 Add delete button to each post
   Add file add button to each post?
 
@@ -19,3 +23,5 @@ move post create button into footer space?
 -add active user count for load channel (/get)
 
 Change "Welcome to Flack" to selected channel name
+
+username create and channel create inputs need to clear after button click

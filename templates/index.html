@@ -20,19 +20,25 @@
         </div>
       </div>
       <div class="item2">
-        <h4>Your Channels</h4>
+        <div style='border-bottom: 2px solid white; margin-bottom: 10px'>
+          <h4>Your Channels<br></h4>
+        </div>
         <div id="channelAlertSpace">
         </div>
         <br>
-        <div class="input-group mb3">
+        <div>
+          <button class='btn btn-primary' id='createChannelPrompt'>Create New</button>
+        </div>
+        <div class="input-group mb3" id="channelCreate" style='display: none'>
           <div class="input-group-prepend">
-            <button class="btn btn-primary" id="channelCreate">Create</button>
+            <button class="btn btn-primary">Create</button>
           </div>
           <input type="text" class="form-control" placeholder="Enter new channel name" id="newChannelName">
         </div>
         <br>
-        <ul id="channelDisplay">
-          <a href='#' style='display: none'>dummy</a>
+        <ul id="channelDisplay" style="border-top: 2px solid white">
+          <br>
+          <li style='display: none'><a href='#'>dummy</a></li>
         </ul>
       </div>
       <div class="item3">
@@ -42,6 +48,9 @@
         </div>
       </div>
       <div class="item4">
+        <div style='border-bottom: 2px solid black'>
+          <p style='margin-bottom: 10px' class="display-4">Flack</p>
+        </div>
         <div id="newUserForm">
           <h4>Looks like you're new!</h4>
           <p class="lead">Please enter new user name below</p>
@@ -52,7 +61,6 @@
             <input type="text" class="form-control" placeholder="Enter new user name" id="newUserInput">
           </div>
         </div>
-        <p class="display-4">Flack</p>
         <div id="userGreeting">
         </div>
         <div id='userNameChange' style="display: none">
