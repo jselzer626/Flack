@@ -1,5 +1,6 @@
 import os
 import json
+import random
 
 from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
@@ -11,6 +12,7 @@ app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
 channel_content = {}
+max_posts = 5
 
 class Post:
     def __init__(self, user, time, text, channel):
@@ -18,6 +20,15 @@ class Post:
         self.time = time
         self.text = text
         self.channel = channel
+
+        # generate a random id that isn't already taken by a post (i.e. if duplicates)
+        id = random.randrange(0, max_posts, 1)
+        while id in channel_content[channel]['ids']:
+            id = random.randrange(0, max_posts, 1)
+
+        self.id = id
+
+        channel_content[channel]['ids'].append(id)
 
     def store_post(self):
         # create temp storage object for post data
@@ -28,21 +39,18 @@ class Post:
 
         channel_content[self.channel]['posts'].append(post_to_store)
 
+
     def popPost(self):
 
         popPosts = False
 
         if channel_content[self.channel]['posts']:
-            while len(channel_content[self.channel]['posts']) > 5:
+            while len(channel_content[self.channel]['posts']) > max_posts:
                 popPosts = True
                 channel_content[self.channel]['posts'].pop(0)
 
         #will let the broswer to know if older posts need to be removed from DOM
         return popPosts
-
-    def indexPost(self):
-
-        return channel_content[self.channel]['posts'].index(self)
 
 # count active users for a given channel
 def count_channel_users(channel):
@@ -77,7 +85,7 @@ def loadChannelList():
 def create_channel(data):
     new_channel_name = data['newChannelName']
     channel_created_time = data['channelCreated']
-    channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': [], 'users': 0}})
+    channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': [], 'users': 0, 'ids': []}})
 
     emit("confirm channel creation", {'newChannelName': new_channel_name, 'message': f"{new_channel_name} succesfully created!"}, broadcast=True)
 
@@ -85,8 +93,6 @@ def create_channel(data):
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
     post.store_post()
-    indexPosition = post.indexPost()
-    print(indexPosition)
     removePosts = post.popPost()
     currentActiveUsers = count_channel_users(post.channel)
     post = json.dumps(post.__dict__)

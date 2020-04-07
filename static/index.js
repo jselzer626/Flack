@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
-    console.log(postToAdd)
+    console.log(postToAdd.id)
     if (data.removePosts == true)
       postsView.removeChild(postsView.childNodes[0])
 

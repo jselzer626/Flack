@@ -2,6 +2,9 @@ Todo's
 This is my attempt at a ticketing system
 
 Add delete button to each post
+
+  need to find a way to index each post
+
   Add file add button to each post?
 
 enable enter button to trigger click events
