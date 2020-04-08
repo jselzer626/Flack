@@ -48,13 +48,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //create and format post
   let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
+
     let newPost = document.createElement('li')
+    newPost.setAttribute('data-post-index', post.id)
     let postDelete = document.createElement('button')
     postDelete.className = 'btn btn-secondary btn-sm'
     postDelete.style.float = 'right'
     postDelete.innerHTML = 'Delete'
     postDelete.addEventListener('click', e => {
-      console.log(e.target.parentNode)
+      if (confirm('Are you sure you want to delete this post?')) {
+        postsView.removeChild(e.target.parentNode)
+        socket.emit('delete post', {'channel': currentChannel, 'id': e.target.parentNode.dataset.postIndex})
+      } else {
+        e.preventDefault()
+        return false
+      }
     })
     newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
     newPost.style.marginRight = '30px'
@@ -179,14 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
+    console.log(data)
     let postToAdd = JSON.parse(data.post)
-    console.log(postToAdd.id)
     if (data.removePosts == true)
       postsView.removeChild(postsView.childNodes[0])
 
     let currentUsers = parseInt(data.currentActiveUsers)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
     postCreate(postToAdd, currentUsers)
+
+  })
+
+  //confirmation from server that post has been deleted
+  socket.on('confirm post deletion', data => {
+    document.querySelector('.text-danger').innerHTML = data.message
   })
 
 })

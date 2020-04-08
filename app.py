@@ -21,35 +21,34 @@ class Post:
         self.text = text
         self.channel = channel
 
+    def store_post(self):
+
+        popPosts = False
+
+        # create space in arrray if needed
+        if len(channel_content[self.channel]['posts']) >= max_posts:
+            popPosts = True
+            postToPop = channel_content[self.channel]['posts'].pop(0)
+            channel_content[self.channel]['ids'].remove(postToPop['id'])
+
         # generate a random id that isn't already taken by a post (i.e. if duplicates)
         id = random.randrange(0, max_posts, 1)
-        while id in channel_content[channel]['ids']:
+        while id in channel_content[self.channel]['ids']:
             id = random.randrange(0, max_posts, 1)
 
         self.id = id
 
-        channel_content[channel]['ids'].append(id)
+        channel_content[self.channel]['ids'].append(id)
 
-    def store_post(self):
         # create temp storage object for post data
         post_to_store = {}
         post_to_store['user'] = self.user
         post_to_store['time'] = self.time
         post_to_store['text'] = self.text
+        post_to_store['id'] = self.id
 
         channel_content[self.channel]['posts'].append(post_to_store)
 
-
-    def popPost(self):
-
-        popPosts = False
-
-        if channel_content[self.channel]['posts']:
-            while len(channel_content[self.channel]['posts']) > max_posts:
-                popPosts = True
-                channel_content[self.channel]['posts'].pop(0)
-
-        #will let the broswer to know if older posts need to be removed from DOM
         return popPosts
 
 # count active users for a given channel
@@ -69,7 +68,6 @@ def loadChannel():
     channel = request.args.get('q')
     try:
         count_channel_users(channel)
-        print(channel_content[channel])
         return jsonify(channel_content[channel])
     except KeyError:
         return jsonify("Channel does not exist")
@@ -92,8 +90,9 @@ def create_channel(data):
 @socketio.on("save post")
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
-    post.store_post()
-    removePosts = post.popPost()
+    # print(channel_content[data['channel']]['posts'])
+    removePosts = post.store_post()
+    # print(channel_content[data['channel']]['posts'])
     currentActiveUsers = count_channel_users(post.channel)
     post = json.dumps(post.__dict__)
     emit("add post to channel", {'post': post, 'currentActiveUsers': currentActiveUsers, 'removePosts': removePosts}, broadcast=True)
@@ -108,3 +107,16 @@ def channel_view(data):
         posts = []
 
     emit("view channel messages", {'channelName': channel_to_lookup, 'posts': posts}, broadcast=True)
+
+@socketio.on('delete post')
+def delete_post(data):
+
+    idToRemove = int(data['id'])
+
+    for post in channel_content[data['channel']]['posts']:
+        if post['id'] == idToRemove:
+            channel_content[data['channel']]['posts'].remove(post)
+            channel_content[data['channel']]['ids'].remove(idToRemove)
+            break
+
+    emit('confirm post deletion', {'id': data['id'], 'message': 'post deleted!'})
