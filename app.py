@@ -90,9 +90,7 @@ def create_channel(data):
 @socketio.on("save post")
 def save_post(data):
     post = Post(data['user'], data['time'], data['text'], data['channel'])
-    # print(channel_content[data['channel']]['posts'])
     removePosts = post.store_post()
-    # print(channel_content[data['channel']]['posts'])
     currentActiveUsers = count_channel_users(post.channel)
     post = json.dumps(post.__dict__)
     emit("add post to channel", {'post': post, 'currentActiveUsers': currentActiveUsers, 'removePosts': removePosts}, broadcast=True)

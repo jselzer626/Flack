@@ -44,3 +44,27 @@
 a {
   color: white;
 }
+
+img {
+  height: 12px;
+  margin-left: 10px;
+  margin-top: 2.5px;
+  float: right;
+}
+
+.fa.fa-star {
+  margin-left: 10px;
+  float: right;
+}
+
+.fa.fa-star:hover {
+  color: orange;
+}
+
+.checked {
+  color: orange;
+}
+
+#postsView li:hover {
+  background-color: #d3d3d3;
+}

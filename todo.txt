@@ -1,12 +1,6 @@
 Todo's
 This is my attempt at a ticketing system
 
-Add delete button to each post
-
-  need to find a way to index each post
-
-  Add file add button to each post?
-
 enable enter button to trigger click events
 
 placeholder in footer space if no channel selected
@@ -18,6 +12,12 @@ placeholder for channel header space when channel selected so everything isn't s
 notification for when a post is created in a channel
 
 test 20 message loads per time (possibly with button)
+
+User details in right column displays total posts and total active conversations
+
+    Add file add button to each post?
+
+Starred posts collect in user details section
 
 
 COMPLETED:
@@ -34,3 +34,7 @@ username create and channel create inputs need to clear after button click
 username change form needs to move below slack header in right section if form appears
 
 100 message display cap (tested with 5 message cap)
+
+Add delete button to each post
+
+  need to find a way to index each post

@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return rightNow
   }
 
+
   //user Greeting
   let greeting = (status, userName, newUserForm=newUserSpace, changeUserSpace=changeUser) => {
 
@@ -50,11 +51,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
 
     let newPost = document.createElement('li')
+    let postDelete = document.createElement('img')
+    let starPost = document.createElement('i')
+
     newPost.setAttribute('data-post-index', post.id)
-    let postDelete = document.createElement('button')
-    postDelete.className = 'btn btn-secondary btn-sm'
-    postDelete.style.float = 'right'
-    postDelete.innerHTML = 'Delete'
+    postDelete.setAttribute('src', '/static/images/black_delete_button.png')
+    starPost.className = 'fa fa-star'
+    starPost.setAttribute('data-checked', false)
+    newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
+    newPost.style.marginRight = '30px'
+
     postDelete.addEventListener('click', e => {
       if (confirm('Are you sure you want to delete this post?')) {
         postsView.removeChild(e.target.parentNode)
@@ -64,10 +70,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return false
       }
     })
-    newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
-    newPost.style.marginRight = '30px'
+
+    starPost.addEventListener('click', e => {
+      if (e.target.dataset.checked == 'false') {
+        e.target.className += ' checked'
+        e.target.dataset.checked = true
+      }
+      else {
+        e.target.classList.remove('checked')
+        e.target.dataset.checked = false
+      }
+    })
+
+    newPost.append(starPost)
     newPost.append(postDelete)
     areaToPost.append(newPost)
+
     currentActiveUsers.innerHTML = activeUsersCount
   }
 
@@ -201,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //confirmation from server that post has been deleted
   socket.on('confirm post deletion', data => {
     document.querySelector('.text-danger').innerHTML = data.message
+    setTimeout(function(){document.querySelector('.text-danger').innerHTML = ''}, 2000)
   })
 
 })
