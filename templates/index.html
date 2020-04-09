@@ -9,6 +9,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script id='postTemplate' type='text/template'>
+      {% raw %}
+        {{#with post}}
+        <li data-post-index={{id}}><b>{{user}}</b><span class='text-muted'>     <em>{{time}}</em></span><i class='fa fa-trash'></i><i class='fa fa-star' data-checked=false></i><br>
+        {{text}}</li>
+        {{/with}}
+      {% endraw %}
+    </script>
     <title>Flack</title>
   </head>
   <body>

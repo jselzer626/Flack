@@ -15,8 +15,6 @@ test 20 message loads per time (possibly with button)
 
 User details in right column displays total posts and total active conversations
 
-    Add file add button to each post?
-
 Starred posts collect in user details section
 
 
@@ -38,3 +36,5 @@ username change form needs to move below slack header in right section if form a
 Add delete button to each post
 
   need to find a way to index each post
+
+add star post

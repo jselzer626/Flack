@@ -50,18 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
   //create and format post
   let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
 
-    let newPost = document.createElement('li')
-    let postDelete = document.createElement('img')
-    let starPost = document.createElement('i')
+    let template = Handlebars.compile(document.querySelector('#postTemplate').innerHTML)
 
-    newPost.setAttribute('data-post-index', post.id)
-    postDelete.setAttribute('src', '/static/images/black_delete_button.png')
-    starPost.className = 'fa fa-star'
-    starPost.setAttribute('data-checked', false)
-    newPost.innerHTML = `<b>${post.user}</b><em><span class="text-muted">   ${post.time}</em></span><br>${post.text}`
-    newPost.style.marginRight = '30px'
+    let newPost = template({'post': post})
 
-    postDelete.addEventListener('click', e => {
+    areaToPost.innerHTML += newPost
+
+    currentActiveUsers.innerHTML = activeUsersCount
+
+    document.querySelector('.fa-trash').addEventListener('click', e => {
       if (confirm('Are you sure you want to delete this post?')) {
         postsView.removeChild(e.target.parentNode)
         socket.emit('delete post', {'channel': currentChannel, 'id': e.target.parentNode.dataset.postIndex})
@@ -71,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
 
-    starPost.addEventListener('click', e => {
+    document.querySelector('.fa-star').addEventListener('click', e => {
       if (e.target.dataset.checked == 'false') {
         e.target.className += ' checked'
         e.target.dataset.checked = true
@@ -82,11 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
 
-    newPost.append(starPost)
-    newPost.append(postDelete)
-    areaToPost.append(newPost)
-
-    currentActiveUsers.innerHTML = activeUsersCount
   }
 
   //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
