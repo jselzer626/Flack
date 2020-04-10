@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  //localStorage.clear()
-
   //connect to socket
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
@@ -25,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let rightNow = `${today.getMonth()}-${today.getDate()}-${today.getFullYear()} ${today.getHours()}:` + (today.getMinutes() < 10 ? `0${today.getMinutes()}` : `${today.getMinutes()}`)
     return rightNow
   }
-
 
   //user Greeting
   let greeting = (status, userName, newUserForm=newUserSpace, changeUserSpace=changeUser) => {
@@ -51,11 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
 
     let template = Handlebars.compile(document.querySelector('#postTemplate').innerHTML)
-
     let newPost = template({'post': post})
-
     areaToPost.innerHTML += newPost
-
     currentActiveUsers.innerHTML = activeUsersCount
 
     document.querySelector('.fa-trash').addEventListener('click', e => {
@@ -92,19 +86,26 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.trim() == '"Channel does not exist"')
         space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
       else {
-        localStorage.setItem('currentChannel', channel)
         response = JSON.parse(response)
         channelHeader.querySelector('h4').innerHTML = `#${channel}`
         channelHeader.querySelector('p').innerHTML = `<b>Created:</b> ${response.channelCreated}`
         channelHeader.querySelector('#channelDetails').style.display = "block"
+
+        $(`a:contains("${currentChannel}")`) ? $(`a:contains("${currentChannel}")`).closest('li').removeClass('selected') : ''
+
+        localStorage.setItem('currentChannel', channel)
+        currentChannel = channel
+        $(`a:contains("${channel}")`).closest('li').addClass('selected')
+
         if (response.posts.length > 0)
           response.posts.forEach(post => postCreate(post, response.users, space))
         else {
           space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
           activeUsers.innerHTML = response.users
         }
+
         document.querySelector("#newPostCreate").style.display = 'block'
-        channelDisplay.querySelectorAll('a').forEach(link => link.innerHTML == channel ? link.closest('li').style.backgroundColor = '#007bff' : link.closest('li').style.backgroundColor = '#014421' )
+
       }
     }
     request.send()
@@ -115,8 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let newLink = document.createElement('a')
     newLink.setAttribute('href', '#')
     newLink.innerHTML = `${channel}`
-    newLink.addEventListener('click', function() {
+    newLink.addEventListener('click', e => {
       loadChannel(channel)
+      //e.target.parentNode.className = 'selected'
     })
     newLinkContainer.append(newLink)
     space.append(newLinkContainer)

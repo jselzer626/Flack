@@ -71,3 +71,7 @@ img {
 #postsView li {
   margin-right: 30px;
 }
+
+.selected {
+  background-color: #d3d3d3;
+}
