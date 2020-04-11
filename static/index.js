@@ -17,6 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //---------------------------------------------------------------------------------------------------------------------------------
   //function definitions
+  let enableClick = (input, button) => {
+    input.addEventListener('keyup', e => {
+      e.keyCode === 13 ? button.click() : ''
+    })
+  }
+
   //Timestamping
   let getTime = () => {
     let today = new Date()
@@ -126,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //---------------------------------------------------------------------------------------------------------------------------------
   //configure non web-socket buttons
+
   //userName create
 
   document.querySelector('#createChannelPrompt').onclick = () => {
@@ -153,6 +160,11 @@ document.addEventListener("DOMContentLoaded", () => {
   //---------------------------------------------------------------------------------------------------------------------------------
   // greet return user
   userName != '' ? greeting('returnUser', userName) : ''
+
+  //enable enter submit for inputs
+  enableClick(newPostCreate.querySelector("textarea"), newPostCreate.querySelector("button"))
+  enableClick(newUserSpace.querySelector('input'), newUserSpace.querySelector('button'))
+  enableClick(channelCreate.querySelector('input'), channelCreate.querySelector('button'))
 
   //load channel channel list
   socket.emit('load channel list')

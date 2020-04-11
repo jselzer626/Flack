@@ -75,3 +75,8 @@ img {
 .selected {
   background-color: #d3d3d3;
 }
+
+.selected > a {
+  color: black;
+  font-weight: bold;
+}
