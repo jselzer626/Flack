@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  console.log(screen.height)
+
   //connect to socket
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
@@ -109,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
           space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
           activeUsers.innerHTML = response.users
         }
-
         document.querySelector("#newPostCreate").style.display = 'block'
 
       }
@@ -124,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     newLink.innerHTML = `${channel}`
     newLink.addEventListener('click', e => {
       loadChannel(channel)
-      //e.target.parentNode.className = 'selected'
     })
     newLinkContainer.append(newLink)
     space.append(newLinkContainer)
@@ -166,6 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
   enableClick(newUserSpace.querySelector('input'), newUserSpace.querySelector('button'))
   enableClick(channelCreate.querySelector('input'), channelCreate.querySelector('button'))
 
+  // load current channel
+  currentChannel != '' ? loadChannel(currentChannel) : ''
+
   //load channel channel list
   socket.emit('load channel list')
 
@@ -202,19 +205,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  //this is sent once channel has been added server side
+  //this is sent once channel has been added server side. if channel name isn't already taken then a name will be included with returned data
   socket.on('confirm channel creation', data => {
+    console.log(data)
     channelDisplay.innerHTML == "<em>No channels yet!</em>" ? channelDisplay.innerHTML = '' : ''
     document.querySelector("#channelAlertSpace").innerHTML = data.message
-    createChannelLink(data.newChannelName)
+    if (data.newChannelName) {
+      createChannelLink(data.newChannelName)
+      loadChannel(data.newChannelName)
+    }
   })
 
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
     console.log(data)
     let postToAdd = JSON.parse(data.post)
-    if (data.removePosts == true)
-      postsView.removeChild(postsView.childNodes[0])
+    if (data.removePosts == true) {
+      //postsView.removeChild(postsView.childNodes[0])
+      postsView.removeChild(postsView.children[0])
+    }
 
     let currentUsers = parseInt(data.currentActiveUsers)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''

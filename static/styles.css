@@ -1,3 +1,8 @@
+html, body {
+  height: 100%;
+  margin: 0px;
+}
+
 .item1 {
   grid-area: header;
   background-color: white;
@@ -11,6 +16,7 @@
   grid-area: main;
   background-color: white;
 }
+
 .item4 {
   grid-area: details;
   background-color: white;
@@ -21,12 +27,14 @@
 }
 
 .grid-container {
+  min-height: 100%;
   display: grid;
   grid-template-areas:
-  'menu header header header header details'
-  'menu main main main main details'
-  'menu main main main main details'
-  'menu footer footer footer footer details';
+  'menu header header header details'
+  'menu main main main details'
+  'menu main main main details'
+  'menu main main main details'
+  'menu footer footer footer details';
   grid-gap: 2px;
   background-color: #404040;
   padding: 5px;
@@ -79,4 +87,8 @@ img {
 .selected > a {
   color: black;
   font-weight: bold;
+}
+
+#channelAlertSpace {
+  height: 40px;
 }

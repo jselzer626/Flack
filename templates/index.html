@@ -30,24 +30,24 @@
         </div>
       </div>
       <div class="item2">
-        <div style='border-bottom: 2px solid white; margin-bottom: 10px'>
-          <h4>Your Channels<br></h4>
+        <div style='border-bottom: 2px solid white; height: 130px;'>
+          <div style='border-bottom: 2px solid white; margin-bottom: 10px;'>
+            <h4>Your Channels<br></h4>
+          </div>
+          <br>
+          <div>
+            <button class='btn btn-primary' id='createChannelPrompt'>Create New</button>
+          </div>
+          <div class="input-group mb3" id="channelCreate" style='display: none'>
+            <div class="input-group-prepend">
+              <button class="btn btn-primary">Create</button>
+            </div>
+            <input type="text" class="form-control" placeholder="Enter new channel name" id="newChannelName">
+          </div>
         </div>
         <div id="channelAlertSpace">
         </div>
-        <br>
-        <div>
-          <button class='btn btn-primary' id='createChannelPrompt'>Create New</button>
-        </div>
-        <div class="input-group mb3" id="channelCreate" style='display: none'>
-          <div class="input-group-prepend">
-            <button class="btn btn-primary">Create</button>
-          </div>
-          <input type="text" class="form-control" placeholder="Enter new channel name" id="newChannelName">
-        </div>
-        <br>
-        <ul id="channelDisplay" style="border-top: 2px solid white">
-          <br>
+        <ul id="channelDisplay">
           <li style='display: none'><a href='#'>dummy</a></li>
         </ul>
       </div>

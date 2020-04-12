@@ -81,11 +81,15 @@ def loadChannelList():
 
 @socketio.on("create channel")
 def create_channel(data):
-    new_channel_name = data['newChannelName']
-    channel_created_time = data['channelCreated']
-    channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': [], 'users': 0, 'ids': []}})
 
-    emit("confirm channel creation", {'newChannelName': new_channel_name, 'message': f"{new_channel_name} succesfully created!"}, broadcast=True)
+    # check to see if channel name already taken
+    if data['newChannelName'] in channel_content.keys():
+        emit("confirm channel creation", {'message': f"{data['newChannelName']} already taken"}, broadcast=True)
+    else:
+        new_channel_name = data['newChannelName']
+        channel_created_time = data['channelCreated']
+        channel_content.update({new_channel_name: {'channelCreated': channel_created_time, 'posts': [], 'users': 0, 'ids': []}})
+        emit("confirm channel creation", {'newChannelName': new_channel_name, 'message': f"{new_channel_name} succesfully created!"}, broadcast=True)
 
 @socketio.on("save post")
 def save_post(data):
