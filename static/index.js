@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let newUserSpace = document.querySelector("#newUserForm")
   let changeUser = document.querySelector("#userNameChange")
   let activeUsers = document.querySelector('#activeUsers')
-  let channelHeaderSpace = document.querySelector(".item1")
+  let channelHeaderSpace = document.querySelector(".headerSpace")
+  let notificationSpace = document.querySelector("#notificationSpace")
   let userName = localStorage.getItem('userName') ? localStorage.getItem('userName') : ''
   let currentChannel = localStorage.getItem('currentChannel') ? localStorage.getItem('currentChannel') : ''
 
@@ -233,8 +234,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //confirmation from server that post has been deleted
   socket.on('confirm post deletion', data => {
-    document.querySelector('.text-danger').innerHTML = data.message
-    setTimeout(function(){document.querySelector('.text-danger').innerHTML = ''}, 2000)
+    notificationSpace.querySelector('p').innerHTML = data.message
+    setTimeout(function(){notificationSpace.querySelector('p').innerHTML = ''}, 2000)
   })
 
 })

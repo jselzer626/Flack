@@ -11,6 +11,8 @@ notification for when a post is created in a channel
 
 test 20 message loads per time (possibly with button)
 
+when post is deleted and no more posts in channel spaace then display a placeholder message
+
 User details in right column displays total posts and total active conversations
 
 Starred posts collect in user details section

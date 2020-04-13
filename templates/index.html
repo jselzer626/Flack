@@ -22,15 +22,8 @@
   </head>
   <body>
     <div class="grid-container">
-      <div class="item1">
-        <h4 class='display-4'></h4>
-        <div id='channelDetails' style="display: none">
-          <p class='lead' style='display: inline-block; margin-right: 100px'></p>
-          <p class='lead' style='display: inline-block'><b>Active Users:</b> <span id='activeUsers'></span></p>
-        </div>
-      </div>
       <div class="item2">
-        <div style='border-bottom: 2px solid white; height: 130px;'>
+        <div style='border-bottom: 2px solid white; height: 148px;'>
           <div style='border-bottom: 2px solid white; margin-bottom: 10px;'>
             <h4>Your Channels<br></h4>
           </div>
@@ -52,14 +45,32 @@
         </ul>
       </div>
       <div class="item3">
-        <p class='text-danger' style='font-size: 20px'></p>
-        <div>
+        <div style="border-bottom: 2px solid black; height: 148px" class="headerSpace">
+          <h4 class='display-4'></h4>
+          <div id='channelDetails' style="display: none">
+            <p class='lead' style='display: inline-block; margin-right: 100px'></p>
+            <p class='lead' style='display: inline-block'><b>Active Users:</b> <span id='activeUsers'></span></p>
+          </div>
+        </div>
+        <div style="border-bottom: 2px dotted black">
+          <p class='text-danger' style='font-size: 20px; margin-top: 15px'>how does this fit</p>
+          <button class="btn btn-primary" style="margin-bottom: 15px">Load older posts</button>
+        </div>
+        <div style="height: 60%; border-bottom: 2px dotted black; margin-top: 20px">
           <ul id='postsView' style="text-align: left">
           </ul>
         </div>
+        <div id='newPostCreate' style="display: none; margin-top: 20px">
+          <div class="input-group mb-3" style="width: 70%; margin: auto">
+            <div class="input-group-prepend">
+              <button class="btn btn-primary">Post</button>
+            </div>
+            <textarea class="form-control" rows="1" placeholder="Type your message here"></textarea>
+          </div>
+        </div>
       </div>
       <div class="item4">
-        <div style='border-bottom: 2px solid black'>
+        <div style='border-bottom: 2px solid black; height: 148px'>
           <p class="display-4">Flack</p>
           <p class='lead' style='margin-bottom: 15px'><em>Instant Messaging</em></p>
         </div>
@@ -67,7 +78,7 @@
         <div id="newUserForm">
           <h4>Looks like you're new!</h4>
           <p class="lead">Please enter new user name below</p>
-          <div class="input-group mb-3" style="width: 60%; margin: auto">
+          <div class="input-group mb-3" style="width: 90%; margin: auto">
             <div class="input-group-prepend">
               <button class="btn btn-primary" id='newUserCreate'>Create</button>
             </div>
@@ -78,16 +89,6 @@
         </div>
         <div id='userNameChange' style="display: none">
           <button class='btn btn-primary'>Change Username</button>
-        </div>
-      </div>
-      <div class='item5'>
-        <div id='newPostCreate' style="display: none">
-          <div class="input-group mb-3" style="width: 70%; margin: auto">
-            <div class="input-group-prepend">
-              <button class="btn btn-primary">Post</button>
-            </div>
-            <textarea class="form-control" rows="1" placeholder="Type your message here"></textarea>
-          </div>
         </div>
       </div>
     </div>
