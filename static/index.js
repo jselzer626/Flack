@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
   //variable definitions
+  let displayChunk = 5
+  let channelLength = 0
   let channelCreate = document.querySelector('#channelCreate')
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
@@ -61,13 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
     areaToPost.innerHTML += newPost
     currentActiveUsers.innerHTML = activeUsersCount
 
-    return document.querySelector(`li[data-post-index='${post.id}']`)
   }
 
   //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
-  let loadChannel = (channel, space=postSpace, pageLoad, channelHeader=channelHeaderSpace) => {
+  let loadChannel = (channel, space=postSpace, channelHeader=channelHeaderSpace) => {
     const request = new XMLHttpRequest()
-    request.open('GET', `/loadChannel?q=${channel}`)
+    request.open('GET', `/loadChannel?channel=${channel}`)
     request.onload = () => {
       space.innerHTML = ''
       let response = request.responseText
@@ -75,25 +76,25 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.trim() == '"Channel does not exist"')
         space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
       else {
+
         response = JSON.parse(response)
+
         channelHeader.querySelector('h4').innerHTML = `#${channel}`
         channelHeader.querySelector('p').innerHTML = `<b>Created:</b> ${response.channelCreated}`
         channelHeader.querySelector('#channelDetails').style.display = "block"
 
         $(`a:contains("${currentChannel}")`) ? $(`a:contains("${currentChannel}")`).closest('li').removeClass('selected') : ''
-
         localStorage.setItem('currentChannel', channel)
         currentChannel = channel
         $(`a:contains("${channel}")`).closest('li').addClass('selected')
 
         if (response.posts.length > 0)
-          response.posts.forEach(post => postCreate(post, response.users, space))
+            response.posts.forEach(post => postCreate(post, response.users, space))
         else {
           space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
           activeUsers.innerHTML = response.users
         }
         document.querySelector("#newPostCreate").style.display = 'block'
-
       }
     }
     request.send()
@@ -117,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // icons for posts
   $(document).on('click', ".fa-trash", e => {
     if (confirm('Are you sure you want to delete this post?')) {
-      postsView.removeChild(e.target.parentNode)
       socket.emit('delete post', {'channel': currentChannel, 'id': e.target.parentNode.dataset.postIndex})
     } else {
       e.preventDefault()
@@ -220,10 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
-    console.log(data)
     let postToAdd = JSON.parse(data.post)
     if (data.removePosts == true) {
-      //postsView.removeChild(postsView.childNodes[0])
       postsView.removeChild(postsView.children[0])
     }
 
@@ -235,6 +233,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //confirmation from server that post has been deleted
   socket.on('confirm post deletion', data => {
+    let postToDelete = postSpace.querySelector(`li[data-post-index="${data.id}"]`)
+    postSpace.removeChild(postToDelete)
     notificationSpace.querySelector('p').innerHTML = data.message
     setTimeout(function(){notificationSpace.querySelector('p').innerHTML = ''}, 2000)
   })

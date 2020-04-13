@@ -66,12 +66,13 @@ def index():
 @app.route("/loadChannel", methods=["GET"])
 def loadChannel():
 
-    channel = request.args.get('q')
+    channel = request.args.get('channel')
     try:
         count_channel_users(channel)
         return jsonify(channel_content[channel])
     except KeyError:
         return jsonify("Channel does not exist")
+
 
 # sockets functions --------------------------------------------------------------------------------------------------------------
 
