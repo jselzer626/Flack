@@ -61,27 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     areaToPost.innerHTML += newPost
     currentActiveUsers.innerHTML = activeUsersCount
 
-    document.querySelector('.fa-trash').addEventListener('click', e => {
-      if (confirm('Are you sure you want to delete this post?')) {
-        postsView.removeChild(e.target.parentNode)
-        socket.emit('delete post', {'channel': currentChannel, 'id': e.target.parentNode.dataset.postIndex})
-      } else {
-        e.preventDefault()
-        return false
-      }
-    })
-
-    document.querySelector('.fa-star').addEventListener('click', e => {
-      if (e.target.dataset.checked == 'false') {
-        e.target.className += ' checked'
-        e.target.dataset.checked = true
-      }
-      else {
-        e.target.classList.remove('checked')
-        e.target.dataset.checked = false
-      }
-    })
-
+    return document.querySelector(`li[data-post-index='${post.id}']`)
   }
 
   //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
@@ -134,7 +114,27 @@ document.addEventListener("DOMContentLoaded", () => {
   //---------------------------------------------------------------------------------------------------------------------------------
   //configure non web-socket buttons
 
-  //userName create
+  // icons for posts
+  $(document).on('click', ".fa-trash", e => {
+    if (confirm('Are you sure you want to delete this post?')) {
+      postsView.removeChild(e.target.parentNode)
+      socket.emit('delete post', {'channel': currentChannel, 'id': e.target.parentNode.dataset.postIndex})
+    } else {
+      e.preventDefault()
+      return false
+    }
+  })
+
+  $(document).on('click', ".fa-star", e => {
+    if (e.target.dataset.checked == 'false') {
+      e.target.className += ' checked'
+      e.target.dataset.checked = true
+    } else {
+      e.target.classList.remove('checked')
+      e.target.dataset.checked = false
+    }
+  })
+
 
   document.querySelector('#createChannelPrompt').onclick = () => {
 
@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
+  //userName create
   newUserSpace.querySelector('button').onclick = saveUser => {
 
     let userNameToSave = newUserSpace.querySelector('input')

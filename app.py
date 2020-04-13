@@ -12,7 +12,8 @@ app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
 channel_content = {}
-max_posts = 5
+max_posts = 10
+max_display_posts = 5
 
 class Post:
     def __init__(self, user, time, text, channel):

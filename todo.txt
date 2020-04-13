@@ -1,6 +1,8 @@
 Todo's
 This is my attempt at a ticketing system
 
+only first post allows you to either check starred post or trashcan
+
 placeholder in footer space if no channel selected
 
 reduce width of channel create input

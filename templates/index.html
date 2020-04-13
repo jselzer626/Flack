@@ -52,21 +52,13 @@
             <p class='lead' style='display: inline-block'><b>Active Users:</b> <span id='activeUsers'></span></p>
           </div>
         </div>
-        <div style="border-bottom: 2px dotted black">
-          <p class='text-danger' style='font-size: 20px; margin-top: 15px'>how does this fit</p>
-          <button class="btn btn-primary" style="margin-bottom: 15px">Load older posts</button>
+        <div id='notificationSpace' style="margin: 15px">
+          <p style='font-size: 20px'></p>
+          <button class="btn btn-primary" style="display: none">Load older posts</button>
         </div>
-        <div style="height: 60%; border-bottom: 2px dotted black; margin-top: 20px">
-          <ul id='postsView' style="text-align: left">
+        <div style="height: 70%; border-top: 2px dotted black">
+          <ul id='postsView' style="text-align: left; margin-top: 15px">
           </ul>
-        </div>
-        <div id='newPostCreate' style="display: none; margin-top: 20px">
-          <div class="input-group mb-3" style="width: 70%; margin: auto">
-            <div class="input-group-prepend">
-              <button class="btn btn-primary">Post</button>
-            </div>
-            <textarea class="form-control" rows="1" placeholder="Type your message here"></textarea>
-          </div>
         </div>
       </div>
       <div class="item4">
@@ -89,6 +81,16 @@
         </div>
         <div id='userNameChange' style="display: none">
           <button class='btn btn-primary'>Change Username</button>
+        </div>
+      </div>
+      <div class="item5">
+        <div id='newPostCreate' style="display: none; margin-top: 20px">
+          <div class="input-group mb-3" style="width: 70%; margin: auto">
+            <div class="input-group-prepend">
+              <button class="btn btn-primary">Post</button>
+            </div>
+            <textarea class="form-control" rows="1" placeholder="Type your message here"></textarea>
+          </div>
         </div>
       </div>
     </div>
