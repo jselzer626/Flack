@@ -1,11 +1,7 @@
 Todo's
 This is my attempt at a ticketing system
 
-test 20 message loads per time (possibly with button) this needs to be integrated with the nomral channel load function
-
 placeholder in footer space if no channel selected
-
-notification for when a post is created in a channel
 
 when post is deleted and no more posts in channel spaace then display a placeholder message
 
@@ -15,6 +11,9 @@ Starred posts collect in user details section
 
 
 COMPLETED:
+
+test 20 message loads per time (possibly with button) this needs to be integrated with the nomral channel load function
+
 change background color of channel list to dark and channel names to white text
 
 move post create button into footer space?

@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //variable definitions
   let displayChunk = 5
-  let channelLength = 0
   let channelCreate = document.querySelector('#channelCreate')
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
@@ -56,13 +55,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //create and format post
-  let postCreate = (post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
+  let postCreate = (action, post, activeUsersCount, areaToPost=postSpace, currentActiveUsers=activeUsers) => {
 
     let template = Handlebars.compile(document.querySelector('#postTemplate').innerHTML)
     let newPost = template({'post': post})
-    areaToPost.innerHTML += newPost
-    currentActiveUsers.innerHTML = activeUsersCount
-
+    if (action == "addingOldPosts") {
+      areaToPost.insertAdjacentHTML('afterbegin', newPost)
+    } else {
+      areaToPost.innerHTML += newPost
+      currentActiveUsers.innerHTML = activeUsersCount
+    }
   }
 
   //load channel - first clear any messages, then save current channel to memory then write posts to DOM and make post create input appear
@@ -76,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.trim() == '"Channel does not exist"')
         space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
       else {
-
         response = JSON.parse(response)
 
         channelHeader.querySelector('h4').innerHTML = `#${channel}`
@@ -88,13 +89,43 @@ document.addEventListener("DOMContentLoaded", () => {
         currentChannel = channel
         $(`a:contains("${channel}")`).closest('li').addClass('selected')
 
-        if (response.posts.length > 0)
-            response.posts.forEach(post => postCreate(post, response.users, space))
-        else {
+        if (response.posts.length > 0) {
+            if (response.posts.length <= displayChunk) {
+              response.posts.forEach(post => postCreate('create', post, response.users, space))
+              notificationSpace.querySelector.innerHTML = "<em>Displaying all posts for this channel</em>"
+            }
+            else {
+              for (let i = (response.posts.length - displayChunk); i <= response.posts.length; i ++) {
+                postCreate('create', response.posts[i], response.users, space)
+              }
+              notificationSpace.querySelector('p').innerHTML = "<em>Displaying most recent messages</em>"
+              notificationSpace.querySelector("button").style.display = ''
+            }
+        } else {
           space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
           activeUsers.innerHTML = response.users
         }
         document.querySelector("#newPostCreate").style.display = 'block'
+      }
+    }
+    request.send()
+  }
+
+  let loadMorePosts = (channel, end) => {
+    const request = new XMLHttpRequest()
+    request.open('GET', `/loadMorePosts?channel=${channel}&start=${end}`)
+    request.onload = () => {
+
+      let response = request.responseText
+
+      response = JSON.parse(response)
+      response.posts.forEach(post => postCreate('addingOldPosts', post, 0))
+
+      console.log(response.displayButton)
+
+      if (response.displayButton == false)  {
+        notificationSpace.querySelector('button').style.display = "none"
+        notificationSpace.querySelector('p').innerHTML = '<em>Displaying all posts for channel</em>'
       }
     }
     request.send()
@@ -135,12 +166,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  //load more posts button
+
+  notificationSpace.querySelector('button').onclick = () => {
+    var start = postSpace.childElementCount
+    loadMorePosts(currentChannel, start)
+  }
 
   document.querySelector('#createChannelPrompt').onclick = () => {
-
     document.querySelector('#createChannelPrompt').parentElement.style.display = "none"
     channelCreate.style.display = ''
-
   }
 
   //userName create
@@ -221,13 +256,14 @@ document.addEventListener("DOMContentLoaded", () => {
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
-    if (data.removePosts == true) {
+
+    /*if (data.removePosts == true) {
       postsView.removeChild(postsView.children[0])
-    }
+    }*/
 
     let currentUsers = parseInt(data.currentActiveUsers)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
-    postCreate(postToAdd, currentUsers)
+    postCreate('create', postToAdd, currentUsers)
 
   })
 

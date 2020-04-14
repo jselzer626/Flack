@@ -12,7 +12,7 @@ app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
 channel_content = {}
-max_posts = 10
+max_posts = 20
 max_display_posts = 5
 
 class Post:
@@ -58,7 +58,6 @@ def count_channel_users(channel):
         channel_content[channel]['users'] = len(active_channel_users)
         return len(active_channel_users)
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -73,6 +72,19 @@ def loadChannel():
     except KeyError:
         return jsonify("Channel does not exist")
 
+@app.route('/loadMorePosts', methods=["GET"])
+def loadMorePosts():
+
+    # start and end are reversed here because we are counting backwards into the post list. Adding 1 to end so I can include final post
+
+    channel = request.args.get('channel')
+    end = int(request.args.get('start'))
+    start = end + max_display_posts
+
+    if len(channel_content[channel]['posts']) > start:
+        return jsonify({'posts': [post for post in reversed(channel_content[channel]['posts'][-start:-end])], 'displayButton': True})
+    else:
+        return jsonify({'posts': [post for post in reversed(channel_content[channel]['posts'][:-end])], 'displayButton': False})
 
 # sockets functions --------------------------------------------------------------------------------------------------------------
 
