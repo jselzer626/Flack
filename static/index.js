@@ -22,8 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
   //---------------------------------------------------------------------------------------------------------------------------------
   //function definitions
   let enableClick = (input, button) => {
-    input.addEventListener('keyup', e => {
-      e.keyCode === 13 ? button.click() : ''
+    input.addEventListener('keypress', e => {
+      if (e.keyCode === 13) {
+        e.preventDefault()
+        button.click()
+        return false
+      }
     })
   }
 
