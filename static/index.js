@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  console.log(screen.height)
+
+  //localStorage.clear()
 
   //connect to socket
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -207,9 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
   enableClick(newUserSpace.querySelector('input'), newUserSpace.querySelector('button'))
   enableClick(channelCreate.querySelector('input'), channelCreate.querySelector('button'))
 
-  // load current channel
-  currentChannel != '' ? loadChannel(currentChannel) : ''
-
   //load channel channel list
   socket.emit('load channel list')
 
@@ -242,7 +240,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (channelDisplay.querySelectorAll('a').length == 1) {
       data = JSON.parse(data.channelList)
       data.length > 0 ? data.forEach(channel => createChannelLink(channel)) : channelDisplay.innerHTML = "<em>No channels yet!</em>"
-      currentChannel != '' ? loadChannel(currentChannel) : channelHeaderSpace.innerHTML = 'No channel currently selected!'
+      if (currentChannel != '')
+        loadChannel(currentChannel)
+      else {
+        channelHeaderSpace.querySelector('h4').innerHTML = 'Welcome!'
+        channelHeaderSpace.querySelector('p').style.display = ''
+      }
     }
   })
 
@@ -260,10 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
-
-    /*if (data.removePosts == true) {
-      postsView.removeChild(postsView.children[0])
-    }*/
 
     let currentUsers = parseInt(data.currentActiveUsers)
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''

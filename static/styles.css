@@ -96,3 +96,17 @@ img {
 #channelAlertSpace {
   height: 40px;
 }
+
+@keyframes shiftRight {
+  0% {
+    transform: translate(0px,0);
+  }
+  100% {
+    transform: translate(200px,0);}
+}
+
+.fa.fa-arrow-right {
+  padding: 50px;
+  color: #014421;
+  animation: shiftRight 4s infinite;
+}

@@ -1,9 +1,13 @@
 Todo's
 This is my attempt at a ticketing system
 
+create arrows to indicate first create username, then create channel
+
+high username create box when arrow is pointing then same for channel create
+
 placeholder in footer space if no channel selected
 
-when post is deleted and no more posts in channel spaace then display a placeholder message
+when post is deleted and no more posts in channel space then display a placeholder message
 
 User details in right column displays total posts and total active conversations
 
