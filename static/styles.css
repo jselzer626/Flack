@@ -98,15 +98,38 @@ img {
 }
 
 @keyframes shiftRight {
-  0% {
-    transform: translate(0px,0);
+  0% {transform: translate(0px,0);}
+  100% {transform: translate(200px,0);}
   }
-  100% {
-    transform: translate(200px,0);}
+
+@keyframes shiftLeft {
+  0% {transform: translate(0px,0);}
+  100% {transform: translate(-200px,0);}
+  }
+
+@keyframes shiftDown {
+  0% {transform: translate(0px,0);}
+  100% {transform: translate(0px,200px);}
 }
 
-.fa.fa-arrow-right {
-  padding: 50px;
+.fa-arrow-left, .fa-arrow-right {
+  padding-top: 50px;
   color: #014421;
+}
+
+.fa-arrow-right {
   animation: shiftRight 4s infinite;
+}
+
+.fa-arrow-left {
+  animation: shiftLeft 4s infinite;
+}
+
+.fa-arrow-down {
+  color: #014421;
+  animation: shiftDown 4s infinite;
+}
+
+#tutorialArrowDown {
+  padding-top: 50px;
 }

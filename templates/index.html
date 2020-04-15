@@ -58,7 +58,8 @@
           <button class="btn btn-primary btn-sm" style="display: none">Load older posts</button>
         </div>
         <div style="height: 70%; border-top: 2px dotted black">
-          <span style="font-size: 50px"><i class="fa fa-arrow-right"></i></span>
+          <span style="font-size: 50px; display: block" id="tutorialArrowSides"><i class="fa fa-arrow-right"></i><p class="lead"></p></span>
+          <span style="font-size: 50px; display: none" id="tutorialArrowDown"><p class="lead">Post to this channel with the box below</p><i class="fa fa-arrow-down"></i></span>
           <ul id='postsView' style="text-align: left; margin-top: 15px">
           </ul>
         </div>
@@ -69,8 +70,8 @@
           <p class='lead' style='margin-bottom: 15px'><em>Instant Messaging</em></p>
         </div>
         <br>
-        <div id="newUserForm">
-          <h4>Looks like you're new!</h4>
+        <div id="newUserForm" style="height: 175px">
+          <br>
           <p class="lead">Please enter new user name below</p>
           <div class="input-group mb-3" style="width: 90%; margin: auto">
             <div class="input-group-prepend">

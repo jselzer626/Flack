@@ -1,13 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
 
 
-  //localStorage.clear()
+  localStorage.clear()
 
   //connect to socket
   let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
   //variable definitions
   let displayChunk = 5
+  let tutorialArrowSides = document.querySelector('#tutorialArrowSides')
   let channelCreate = document.querySelector('#channelCreate')
   let channelDisplay = document.querySelector("#channelDisplay")
   let newPostCreate = document.querySelector("#newPostCreate")
@@ -83,11 +84,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.trim() == '"Channel does not exist"')
         space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>Please create a channel to begin messaging</em></p><br><br><br>'
       else {
+
         response = JSON.parse(response)
+        var channelDetails = channelHeader.querySelector('#channelDetails')
 
         channelHeader.querySelector('h4').innerHTML = `#${channel}`
-        channelHeader.querySelector('p').innerHTML = `<b>Created:</b> ${response.channelCreated}`
-        channelHeader.querySelector('#channelDetails').style.display = "block"
+        channelHeader.querySelector('p').style.display = 'none'
+        channelDetails.querySelector('p').innerHTML = `<b>Created:</b> ${response.channelCreated}`
+        channelDetails.style.display = "block"
 
         $(`a:contains("${currentChannel}")`) ? $(`a:contains("${currentChannel}")`).closest('li').removeClass('selected') : ''
         localStorage.setItem('currentChannel', channel)
@@ -107,8 +111,14 @@ document.addEventListener("DOMContentLoaded", () => {
               notificationSpace.querySelector("button").style.display = ''
             }
         } else {
-          space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
+          //space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
+          document.querySelector('#createChannelPrompt').style.boxShadow = ''
+          tutorialArrowSides.style.display = "none"
           activeUsers.innerHTML = response.users
+          if (postSpace.childElementCount == 0) {
+             document.querySelector("#tutorialArrowDown").style.display = "block"
+             document.querySelector('textarea').style.boxShadow = "1px 1px 25px 10px #014421"
+          }
         }
         document.querySelector("#newPostCreate").style.display = 'block'
       }
@@ -192,6 +202,19 @@ document.addEventListener("DOMContentLoaded", () => {
       userName = userNameToSave.value
       localStorage.setItem('userName', userName)
       greeting('newUser', userName)
+      newUserSpace.style.boxShadow = ''
+      if (!currentChannel) {
+        document.querySelector('#createChannelPrompt').style.visibility = 'visible'
+        document.querySelector('#createChannelPrompt').style.boxShadow = "1px 1px 25px 10px #A9A9A9"
+        tutorialArrowSides.querySelector('i').className = "fa fa-arrow-left"
+        tutorialArrowSides.querySelector('p').innerHTML = "Great! Now create or choose an existing channel"
+        if (channelDisplay.childElementCount > 1) {
+          channelDisplay.style.boxShadow = "1px 1px 25px 10px #A9A9A9"
+          tutorialArrowSides.querySelector('p').innerHTML = "Great! Now create or choose an existing channel"
+        } else {
+          tutorialArrowSides.querySelector('p').innerHTML = "Great! Now create a channel"
+        }
+      }
     } else {
       saveUser.preventDefault()
       window.alert('Please enter something into the field')
@@ -200,9 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //---------------------------------------------------------------------------------------------------------------------------------
-  // greet return user
-  userName != '' ? greeting('returnUser', userName) : ''
-
   //enable enter submit for inputs
   enableClick(newPostCreate.querySelector("textarea"), newPostCreate.querySelector("button"))
   enableClick(newUserSpace.querySelector('input'), newUserSpace.querySelector('button'))
@@ -211,6 +231,15 @@ document.addEventListener("DOMContentLoaded", () => {
   //load channel channel list
   socket.emit('load channel list')
 
+  // greet user
+  if (userName != '')
+    greeting('returnUser', userName)
+  else {
+    document.querySelector('#createChannelPrompt').style.visibility = "hidden"
+    tutorialArrowSides.querySelector('p').innerHTML = "Create a username first"
+    tutorialArrowSides.style.display = "block"
+    newUserSpace.style.boxShadow = "1px 1px 25px 10px #014421"
+  }
   //---------------------------------------------------------------------------------------------------------------------------------
   socket.on('connect', () => {
 
@@ -251,7 +280,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //this is sent once channel has been added server side. if channel name isn't already taken then a name will be included with returned data
   socket.on('confirm channel creation', data => {
-    console.log(data)
     channelDisplay.innerHTML == "<em>No channels yet!</em>" ? channelDisplay.innerHTML = '' : ''
     document.querySelector("#channelAlertSpace").innerHTML = data.message
     if (data.newChannelName) {
@@ -265,6 +293,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let postToAdd = JSON.parse(data.post)
 
     let currentUsers = parseInt(data.currentActiveUsers)
+    document.querySelector("#tutorialArrowDown").style.display = "none"
+    document.querySelector('textarea').style.boxShadow = ''
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
     postCreate('create', postToAdd, currentUsers)
 
