@@ -330,6 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tutorial('appear', document.querySelector("#tutorialArrowDown"), document.querySelector('textarea'), "Post to this channel using the box below" ,"#014421")
     } else
       setTimeout( () => {notificationSpace.querySelector('p').innerHTML = previousNotification }, 2000)
+    activeUsers.innerHTML = data.users
   })
 
 })

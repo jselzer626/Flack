@@ -135,4 +135,6 @@ def delete_post(data):
             channel_content[data['channel']]['ids'].remove(idToRemove)
             break
 
-    emit('confirm post deletion', {'id': data['id'], 'message': 'post deleted!'}, broadcast=True)
+    users = count_channel_users(data['channel'])
+
+    emit('confirm post deletion', {'id': data['id'], 'message': 'post deleted!', 'users': users}, broadcast=True)
