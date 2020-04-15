@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //---------------------------------------------------------------------------------------------------------------------------------
   //function definitions
+  //enable enter to submit inputs (in addition to clicking on buttons)
   let enableClick = (input, button) => {
     input.addEventListener('keypress', e => {
       if (e.keyCode === 13) {
@@ -31,6 +32,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return false
       }
     })
+  }
+
+  //tutorial appear and dissapear
+  let tutorial = (action, spanId, elementToIndicate='', helperText='', glowColor='') => {
+    var glowDetails = "1px 1px 25px 10px"
+    if (action == "appear") {
+      spanId.style.display = "block"
+      spanId.querySelector('p').innerHTML = helperText
+      elementToIndicate.style.boxShadow = `${glowDetails} ${glowColor}`
+    } else {
+      spanId.style.display = 'none'
+      elementToIndicate.style.boxShadow = ''
+    }
   }
 
   //Timestamping
@@ -101,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (response.posts.length > 0) {
             if (response.posts.length <= displayChunk) {
               response.posts.forEach(post => postCreate('create', post, response.users, space))
-              notificationSpace.querySelector.innerHTML = "<em>Displaying all posts for this channel</em>"
+              notificationSpace.querySelector('p').innerHTML = "<em>Displaying all posts for this channel</em>"
             }
             else {
               for (let i = (response.posts.length - displayChunk); i <= response.posts.length; i ++) {
@@ -111,15 +125,15 @@ document.addEventListener("DOMContentLoaded", () => {
               notificationSpace.querySelector("button").style.display = ''
             }
         } else {
-          //space.innerHTML = '<br><br><br><p class="lead" style="text-align: center"><em>No posts here yet!</em></p><br><br><br>'
-          document.querySelector('#createChannelPrompt').style.boxShadow = ''
-          tutorialArrowSides.style.display = "none"
           activeUsers.innerHTML = response.users
           if (postSpace.childElementCount == 0) {
-             document.querySelector("#tutorialArrowDown").style.display = "block"
-             document.querySelector('textarea').style.boxShadow = "1px 1px 25px 10px #014421"
+            tutorial('appear', document.querySelector("#tutorialArrowDown"), document.querySelector('textarea'), "Post to this channel using the box below" ,"#014421")
+            notificationSpace.querySelector('p').innerHTML = "No posts yet for this channel!"
+            notificationSpace.querySelector('button').style.display = 'none'
           }
         }
+        tutorial('dissapear', tutorialArrowSides, document.querySelector('#createChannelPrompt'))
+        channelDisplay.style.boxShadow = ''
         document.querySelector("#newPostCreate").style.display = 'block'
       }
     }
@@ -149,12 +163,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let createChannelLink = (channel, space=channelDisplay) => {
     let newLinkContainer = document.createElement('li')
     let newLink = document.createElement('a')
+    channelDisplay.style.boxShadow = ''
     newLink.setAttribute('href', '#')
     newLink.innerHTML = `${channel}`
     newLink.addEventListener('click', e => {
-      loadChannel(channel)
+      if (!userName) {
+        window.alert('Please create a username first!')
+        e.preventDefault()
+        return false
+      } else
+        loadChannel(channel)
     })
     newLinkContainer.append(newLink)
+    newLinkContainer.addEventListener('click', e => {
+      newLink.click()
+    })
     space.append(newLinkContainer)
   }
 
@@ -207,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('#createChannelPrompt').style.visibility = 'visible'
         document.querySelector('#createChannelPrompt').style.boxShadow = "1px 1px 25px 10px #A9A9A9"
         tutorialArrowSides.querySelector('i').className = "fa fa-arrow-left"
-        tutorialArrowSides.querySelector('p').innerHTML = "Great! Now create or choose an existing channel"
         if (channelDisplay.childElementCount > 1) {
           channelDisplay.style.boxShadow = "1px 1px 25px 10px #A9A9A9"
           tutorialArrowSides.querySelector('p').innerHTML = "Great! Now create or choose an existing channel"
@@ -236,9 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
     greeting('returnUser', userName)
   else {
     document.querySelector('#createChannelPrompt').style.visibility = "hidden"
-    tutorialArrowSides.querySelector('p').innerHTML = "Create a username first"
-    tutorialArrowSides.style.display = "block"
-    newUserSpace.style.boxShadow = "1px 1px 25px 10px #014421"
+    tutorial('appear', tutorialArrowSides, newUserSpace, "Create a username first", "#014421")
   }
   //---------------------------------------------------------------------------------------------------------------------------------
   socket.on('connect', () => {
@@ -291,21 +311,25 @@ document.addEventListener("DOMContentLoaded", () => {
   //this is sent once post has been added to channel dictionary server side - this will pop first <li> if number of posts is greater than 100
   socket.on('add post to channel', data => {
     let postToAdd = JSON.parse(data.post)
-
     let currentUsers = parseInt(data.currentActiveUsers)
-    document.querySelector("#tutorialArrowDown").style.display = "none"
-    document.querySelector('textarea').style.boxShadow = ''
+
+    tutorial('dissapear', document.querySelector("#tutorialArrowDown"), document.querySelector('textarea'))
     postSpace.querySelector('p') ? postSpace.innerHTML = '' : ''
     postCreate('create', postToAdd, currentUsers)
-
+    notificationSpace.querySelector('p').innerHTML == "No posts yet for this channel!" ? notificationSpace.querySelector('p').innerHTML = '<em>Displaying all posts for channel</em>' : ''
   })
 
   //confirmation from server that post has been deleted
   socket.on('confirm post deletion', data => {
     let postToDelete = postSpace.querySelector(`li[data-post-index="${data.id}"]`)
+    var previousNotification = notificationSpace.querySelector('p').innerHTML
     postSpace.removeChild(postToDelete)
     notificationSpace.querySelector('p').innerHTML = data.message
-    setTimeout(function(){notificationSpace.querySelector('p').innerHTML = ''}, 2000)
+    if (postSpace.childElementCount == 0) {
+      setTimeout( () => {notificationSpace.querySelector('p').innerHTML = "No posts yet for this channel!" }, 2000)
+      tutorial('appear', document.querySelector("#tutorialArrowDown"), document.querySelector('textarea'), "Post to this channel using the box below" ,"#014421")
+    } else
+      setTimeout( () => {notificationSpace.querySelector('p').innerHTML = previousNotification }, 2000)
   })
 
 })

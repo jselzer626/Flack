@@ -3,11 +3,6 @@ html, body {
   margin: 0px;
 }
 
-/*.item1 {
-  grid-area: header;
-  background-color: white;
-}*/
-
 .item2 {
   color: white;
   grid-area: menu;
@@ -75,6 +70,16 @@ img {
 .checked {
   color: orange;
 }
+
+#channelDisplay li:hover {
+  background-color: #d3d3d3;
+}
+
+#channelDisplay li:hover > a {
+  color: black;
+  font-weight: bold;
+}
+
 
 #postsView li:hover {
   background-color: #d3d3d3;

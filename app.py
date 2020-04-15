@@ -135,4 +135,4 @@ def delete_post(data):
             channel_content[data['channel']]['ids'].remove(idToRemove)
             break
 
-    emit('confirm post deletion', {'id': data['id'], 'message': 'post deleted!'})
+    emit('confirm post deletion', {'id': data['id'], 'message': 'post deleted!'}, broadcast=True)
