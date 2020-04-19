@@ -1,14 +1,6 @@
 Todo's
 This is my attempt at a ticketing system
 
-create arrows to indicate first create username, then create channel
-
-high username create box when arrow is pointing then same for channel create
-
-placeholder in footer space if no channel selected
-
-when post is deleted and no more posts in channel space then display a placeholder message
-
 User details in right column displays total posts and total active conversations
 
 Starred posts collect in user details section
@@ -43,3 +35,11 @@ enable enter button to trigger click events
 only first post allows you to either check starred post or trashcan
 
 reduce width of channel create input
+
+when post is deleted and no more posts in channel space then display a placeholder message
+
+create arrows to indicate first create username, then create channel
+
+high username create box when arrow is pointing then same for channel create
+
+update active users when post is deleted

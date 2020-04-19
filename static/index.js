@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     channelDisplay.style.boxShadow = ''
     newLink.setAttribute('href', '#')
     newLink.innerHTML = `${channel}`
-    newLink.addEventListener('click', e => {
+    newLinkContainer.addEventListener('click', e => {
       if (!userName) {
         window.alert('Please create a username first!')
         e.preventDefault()
@@ -175,9 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadChannel(channel)
     })
     newLinkContainer.append(newLink)
-    newLinkContainer.addEventListener('click', e => {
-      newLink.click()
-    })
     space.append(newLinkContainer)
   }
 
