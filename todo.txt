@@ -1,8 +1,6 @@
 Todo's
 This is my attempt at a ticketing system
 
-test add
-
 test add 2
 
 User details in right column displays total posts and total active conversations
